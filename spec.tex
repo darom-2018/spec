@@ -20,9 +20,7 @@
 
 \begin{document}
     \section{Reali mašina}
-
     \pagebreak
-
     \section{Virtuali mašina}
         \subsection{Procesorius}
             \subsubsection{Registrai}
@@ -44,12 +42,10 @@
                     \end{bytefield}
             \subsubsection{Instrukcijų rinkinys}
                 \paragraph{Bendros paskirties operacijos}
-                    \vspace{1em}
-
                     \begin{center}
                         \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
                             \noalign{\hrule height 1pt}
-                            Mnemonika & Kodas & Aprašymas \\
+                            Mnemonika     & Kodas & Aprašymas                                                          \\
                             \noalign{\hrule height 1pt}
                             \texttt{NOP}  & \texttt{00 00} & Neatlieka jokio veiksmo                                   \\
                             \hline
@@ -57,14 +53,11 @@
                             \noalign{\hrule height 1pt}
                         \end{tabular}
                     \end{center}
-
                 \paragraph{Steko operacijos}
-                    \vspace{1em}
-
                     \begin{center}
                         \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
                             \noalign{\hrule height 1pt}
-                            Mnemonika  & Kodas          & Aprašymas                                                       \\
+                            Mnemonika           & Kodas          & Aprašymas                                                       \\
                             \noalign{\hrule height 1pt}
                             \texttt{DUP}        & \texttt{01 00} & Padaro steko viršūnės kopiją                                    \\
                             \hline
@@ -78,22 +71,84 @@
                             \noalign{\hrule height 1pt}
                         \end{tabular}
                     \end{center}
-
+                \pagebreak
                 \paragraph{Aritmetinės operacijos}
-                    \vspace{1em}
-
                     \begin{center}
                         \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
                             \noalign{\hrule height 1pt}
-                            Mnemonika  & Kodas          & Aprašymas                                                       \\
+                            Mnemonika    & Kodas          & Aprašymas                                                                               \\
                             \noalign{\hrule height 1pt}
-                            \texttt{ADD} & \texttt{02 00} & Sudeda du steke esančius skaičius ir rezultatą patalpina steko viršūnėje \\
+                            \texttt{ADD} & \texttt{02 00} & Sudeda du steke esančius žodžius ir patalpina rezultatą steko viršūnėje                 \\
                             \hline
-                            \texttt{DIV} & \texttt{02 01} & Padalina pirmąjį steke esantį skaičių iš antrojo ir rezultatą patalpina steko viršūnėje \\
+                            \texttt{DEC} & \texttt{02 01} & Steko viršūnėje esančio žodžio reikšmę sumažina vienetu                                 \\
                             \hline
-                            \texttt{MUL} & \texttt{02 02} & Nukopijuoja žodį iš operande nurodytos vietos atmintyje į steką \\
+                            \texttt{DIV} & \texttt{02 02} & Padalina pirmąjį steke esantį žodį iš antrojo ir patalpina rezultatą steko viršūnėje    \\
                             \hline
-                            \texttt{SUB} & \texttt{02 03} & Nukopijuoja operando žodį į steką                               \\
+                            \texttt{INC} & \texttt{02 03} & Steko viršūnėje esančio žodžio reikšmę padidina vienetu                                 \\
+                            \hline
+                            \texttt{MUL} & \texttt{02 04} & Sudaugina du steke esančius žodžius ir patalpina rezultatą steko viršūnėje              \\
+                            \hline
+                            \texttt{SUB} & \texttt{02 05} & Atima antrąjį steke esantį žodį iš pirmojo ir patalpina rezultatą steko viršūnėje       \\
+                            \noalign{\hrule height 1pt}
+                        \end{tabular}
+                    \end{center}
+                \paragraph{Loginės operacijos}
+                    \begin{center}
+                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
+                            \noalign{\hrule height 1pt}
+                            Mnemonika    & Kodas          & Aprašymas                                                                                      \\
+                            \noalign{\hrule height 1pt}
+                            \texttt{AND} & \texttt{03 00} & Atlieka dviejų steke esančių žodžių konjunkciją ir patalpina rezultatą steko viršūnėje         \\
+                            \hline
+                            \texttt{NOT} & \texttt{03 01} & Atlieka steko viršūnėje esančio žodžio inversiją                                               \\
+                            \hline
+                            \texttt{OR}  & \texttt{03 02} & Atlieka dviejų steke esančių žodžių disjunkciją ir patalpina rezultatą steko viršūnėje         \\
+                            \hline
+                            \texttt{XOR} & \texttt{03 03} & Atlieka dviejų steke esančių žodžių griežtą disjunkciją ir patalpina rezultatą steko viršūnėje \\
+                            \noalign{\hrule height 1pt}
+                        \end{tabular}
+                    \end{center}
+                \paragraph{Valdymo operacijos}
+                    \begin{center}
+                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
+                            \noalign{\hrule height 1pt}
+                            Mnemonika    & Kodas          & Aprašymas \\
+                            \noalign{\hrule height 1pt}
+                            \texttt{JMP}  & \texttt{04 00} & \\
+                            \hline
+                            \texttt{JC}   & \texttt{04 01} & \\
+                            \hline
+                            \texttt{JE}   & \texttt{04 02} & \\
+                            \hline
+                            \texttt{JG}   & \texttt{04 03} & \\
+                            \hline
+                            \texttt{JGE}  & \texttt{04 04} & \\
+                            \hline
+                            \texttt{JL}   & \texttt{04 05} & \\
+                            \hline
+                            \texttt{JLE}  & \texttt{04 06} & \\
+                            \hline
+                            \texttt{JNC}  & \texttt{04 07} & \\
+                            \hline
+                            \texttt{JNE}  & \texttt{04 08} & \\
+                            \hline
+                            \texttt{JNP}  & \texttt{04 09} & \\
+                            \hline
+                            \texttt{JP}   & \texttt{04 0A} & \\
+                            \hline
+                            \texttt{LOOP} & \texttt{04 0B} & \\
+                            \noalign{\hrule height 1pt}
+                        \end{tabular}
+                    \end{center}
+                \paragraph{Įvesties/išvesties operacijos}
+                    \begin{center}
+                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
+                            \noalign{\hrule height 1pt}
+                            Mnemonika    & Kodas          & Aprašymas \\
+                            \noalign{\hrule height 1pt}
+                            \texttt{IN}  & \texttt{05 00} & \\
+                            \hline
+                            \texttt{OUT} & \texttt{05 01} & \\
                             \noalign{\hrule height 1pt}
                         \end{tabular}
                     \end{center}

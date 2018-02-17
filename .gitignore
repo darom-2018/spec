@@ -1,5 +1,7 @@
 /*.aux
 /*.log
+/*.out
+/*.pdf
 /*.txt
 /missfont.txt
 /texput.log
