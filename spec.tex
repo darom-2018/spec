@@ -1,10 +1,12 @@
 \documentclass{scrartcl}
 
 \usepackage{array}
+\usepackage{bytefield}
 \usepackage{fontspec}
 \usepackage{hyperref}
 \usepackage{microtype}
 \usepackage{scrlayer-scrpage}
+\usepackage{xcolor}
 
 \setmainfont{TeX Gyre Termes}
 \setmonofont{TeX Gyre Cursor}
@@ -14,8 +16,9 @@
 
 \newcolumntype{?}{!{\vrule width 1pt}}
 
-\begin{document}
+\definecolor{lightgray}{gray}{0.8}
 
+\begin{document}
     \section{Reali mašina}
 
     \pagebreak
@@ -30,8 +33,15 @@
                 \paragraph{FLAGS}
                     Dviejų baitų dydžio registras, kuriame saugomi paskutinės aritmetinės ar loginės operacijos požymiai.
 
-                    
+                    \vspace{1em}
 
+                    \begin{bytefield}[bitwidth=1.5em,endianness=big]{16}
+                        \bitheader{0-15}  \\
+                        \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{CF}
+                        \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{OF}
+                        \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{PF}
+                        \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{ZF}
+                    \end{bytefield}
             \subsubsection{Instrukcijų rinkinys}
                 \paragraph{Bendros paskirties operacijos}
                     \vspace{1em}

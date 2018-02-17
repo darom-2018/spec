@@ -1,7 +1,10 @@
 image: fedora:27
 
 before_script:
-    - dnf install -y texlive-collection-latexrecommended texlive-collection-xetex
+    - dnf install -y \
+        texlive-collection-latexrecommended \
+        texlive-collection-science          \
+        texlive-collection-xetex
 
 pdf:
     stage: build
