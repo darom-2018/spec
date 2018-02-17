@@ -1,0 +1,90 @@
+\documentclass{scrartcl}
+
+\usepackage{array}
+\usepackage{fontspec}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{scrlayer-scrpage}
+
+\setmainfont{TeX Gyre Termes}
+\setmonofont{TeX Gyre Cursor}
+
+\ohead{}
+\cfoot*{\pagemark}
+
+\newcolumntype{?}{!{\vrule width 1pt}}
+
+\begin{document}
+
+    \section{Reali mašina}
+
+    \pagebreak
+
+    \section{Virtuali mašina}
+        \subsection{Procesorius}
+            \subsubsection{Registrai}
+                \paragraph{PC}
+                    Dviejų baitų dydžio registras, kuriame saugomas adresas instrukcijos, kuri bus vykdoma po dabartinės.
+                \paragraph{SP}
+                    Dviejų baitų dydžio registras, kuriame saugomas steko viršūnės adresas.
+                \paragraph{FLAGS}
+                    Dviejų baitų dydžio registras, kuriame saugomi paskutinės aritmetinės ar loginės operacijos požymiai.
+
+                    
+
+            \subsubsection{Instrukcijų rinkinys}
+                \paragraph{Bendros paskirties operacijos}
+                    \vspace{1em}
+
+                    \begin{center}
+                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
+                            \noalign{\hrule height 1pt}
+                            Mnemonika & Kodas & Aprašymas \\
+                            \noalign{\hrule height 1pt}
+                            \texttt{NOP}  & \texttt{00 00} & Neatlieka jokio veiksmo                                   \\
+                            \hline
+                            \texttt{HALT} & \texttt{00 01} & Sustabdo procesoriaus darbą (nutraukia programos vykdymą) \\
+                            \noalign{\hrule height 1pt}
+                        \end{tabular}
+                    \end{center}
+
+                \paragraph{Steko operacijos}
+                    \vspace{1em}
+
+                    \begin{center}
+                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
+                            \noalign{\hrule height 1pt}
+                            Mnemonika  & Kodas          & Aprašymas                                                       \\
+                            \noalign{\hrule height 1pt}
+                            \texttt{DUP}        & \texttt{01 00} & Padaro steko viršūnės kopiją                                    \\
+                            \hline
+                            \texttt{POP m16}    & \texttt{01 01} & Nukopijuoja steko viršūnę į atminties vietą, nurodytą operande  \\
+                            \hline
+                            \texttt{PUSH m16}   & \texttt{01 02} & Nukopijuoja žodį iš operande nurodytos vietos atmintyje į steką \\
+                            \hline
+                            \texttt{PUSH imm16} & \texttt{01 03} & Nukopijuoja operando žodį į steką                               \\
+                            \hline
+                            \texttt{PUSHF}      & \texttt{01 04} & Nukopijuoja FLAGS registro reikšmę į steką                      \\
+                            \noalign{\hrule height 1pt}
+                        \end{tabular}
+                    \end{center}
+
+                \paragraph{Aritmetinės operacijos}
+                    \vspace{1em}
+
+                    \begin{center}
+                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
+                            \noalign{\hrule height 1pt}
+                            Mnemonika  & Kodas          & Aprašymas                                                       \\
+                            \noalign{\hrule height 1pt}
+                            \texttt{ADD} & \texttt{02 00} & Sudeda du steke esančius skaičius ir rezultatą patalpina steko viršūnėje \\
+                            \hline
+                            \texttt{DIV} & \texttt{02 01} & Padalina pirmąjį steke esantį skaičių iš antrojo ir rezultatą patalpina steko viršūnėje \\
+                            \hline
+                            \texttt{MUL} & \texttt{02 02} & Nukopijuoja žodį iš operande nurodytos vietos atmintyje į steką \\
+                            \hline
+                            \texttt{SUB} & \texttt{02 03} & Nukopijuoja operando žodį į steką                               \\
+                            \noalign{\hrule height 1pt}
+                        \end{tabular}
+                    \end{center}
+\end{document}

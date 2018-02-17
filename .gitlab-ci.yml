@@ -1,0 +1,12 @@
+image: fedora:27
+
+before_script:
+    - dnf install -y texlive-collection-latexrecommended texlive-collection-xetex
+
+pdf:
+    stage: build
+    script: xelatex spec.tex
+    artifacts:
+        paths:
+            - spec.pdf
+        expire_in: 1 week
