@@ -3,6 +3,7 @@
 \usepackage{array}
 \usepackage{bytefield}
 \usepackage{fontspec}
+\usepackage{gitinfo2}
 \usepackage{hyperref}
 \usepackage{microtype}
 \usepackage{scrlayer-scrpage}
@@ -11,7 +12,7 @@
 \setmainfont{TeX Gyre Termes}
 \setmonofont{TeX Gyre Cursor}
 
-\ohead{}
+\ohead{Release \gitDescribe\ (\gitCommitterDate)}
 \cfoot*{\pagemark}
 
 \newcolumntype{?}{!{\vrule width 1pt}}
