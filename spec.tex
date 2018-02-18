@@ -20,151 +20,93 @@
 \definecolor{lightgray}{gray}{0.8}
 
 \begin{document}
+\newcommand{\instr}[3]{\subparagraph{\makebox[6em][l]{\texttt{#1}}} (\texttt{#2})\par#3\par}
+
     \section{Reali mašina}
-    \pagebreak
     \section{Virtuali mašina}
         \subsection{Procesorius}
             \subsubsection{Registrai}
-                \paragraph{PC}
+                \paragraph{PC} \mbox{} \\
                     Dviejų baitų dydžio registras, kuriame saugomas adresas instrukcijos, kuri bus vykdoma po dabartinės.
-                \paragraph{SP}
+                \paragraph{SP} \mbox{} \\
                     Dviejų baitų dydžio registras, kuriame saugomas steko viršūnės adresas.
-                \paragraph{FLAGS}
+                \paragraph{FLAGS} \mbox{} \\
                     Dviejų baitų dydžio registras, kuriame saugomi paskutinės aritmetinės ar loginės operacijos požymiai.
-
-                    \vspace{1em}
-
-                    \begin{bytefield}[bitwidth=1.5em,endianness=big]{16}
-                        \bitheader{0-15}  \\
-                        \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{CF}
-                        \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{OF}
-                        \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{PF}
-                        \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{ZF}
-                    \end{bytefield}
+                    \begin{center}
+                        \begin{bytefield}[bitwidth=1.5em,endianness=big]{16}
+                            \bitheader{0-15} \\
+                            \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{CF}
+                            \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{OF}
+                            \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{PF}
+                            \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{ZF}
+                        \end{bytefield}
+                    \end{center}
             \subsubsection{Instrukcijų rinkinys}
                 \paragraph{Bendros paskirties operacijos}
-                    \begin{center}
-                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
-                            \noalign{\hrule height 1pt}
-                            Mnemonika     & Kodas & Aprašymas                                                          \\
-                            \noalign{\hrule height 1pt}
-                            \texttt{NOP}  & \texttt{00 00} & Neatlieka jokio veiksmo                                   \\
-                            \hline
-                            \texttt{HALT} & \texttt{00 01} & Sustabdo procesoriaus darbą (nutraukia programos vykdymą) \\
-                            \noalign{\hrule height 1pt}
-                        \end{tabular}
-                    \end{center}
+                    \instr{NOP}{00 00}{Neatlieka jokio veiksmo.}
+                    \instr{HALT}{00 01}{Sustabdo procesoriaus darbą (nutraukia programos vykdymą).}
                 \paragraph{Steko operacijos}
-                    \begin{center}
-                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
-                            \noalign{\hrule height 1pt}
-                            Mnemonika           & Kodas          & Aprašymas                                                       \\
-                            \noalign{\hrule height 1pt}
-                            \texttt{DUP}        & \texttt{01 00} & Padaro steko viršūnės kopiją                                    \\
-                            \hline
-                            \texttt{POP m16}    & \texttt{01 01} & Nukopijuoja steko viršūnę į atminties vietą, nurodytą operande  \\
-                            \hline
-                            \texttt{PUSH m16}   & \texttt{01 02} & Nukopijuoja žodį iš operande nurodytos vietos atmintyje į steką \\
-                            \hline
-                            \texttt{PUSH imm16} & \texttt{01 03} & Nukopijuoja operando žodį į steką                               \\
-                            \hline
-                            \texttt{PUSHF}      & \texttt{01 04} & Nukopijuoja FLAGS registro reikšmę į steką                      \\
-                            \noalign{\hrule height 1pt}
-                        \end{tabular}
-                    \end{center}
-                \pagebreak
+                    \instr{DUP}{01 00}{Padaro steko viršūnės kopiją.}
+                    Pseudokodas:
+\begin{verbatim}
+     SP  :=  SP + 2
+    [SP] := [SP - 2]
+\end{verbatim}
+                    \instr{POP m16}{01 01}{Nukopijuoja steko viršūnę į atminties vietą, nurodytą operande.}
+                    Pseudokodas:
+\begin{verbatim}
+    [OP] := [  SP  ]
+     SP  :=  SP - 2
+\end{verbatim}
+                    \instr{PUSH m16}{01 02}{Nukopijuoja žodį iš operande nurodytos vietos atmintyje į steką.}
+                    Pseudokodas:
+\begin{verbatim}
+     SP  :=  SP + 2
+    [SP] := [  OP  ]
+\end{verbatim}
+                    \instr{PUSH imm16}{01 03}{Nukopijuoja operando žodį į steką.}
+                    Pseudokodas:
+\begin{verbatim}
+     SP  := SP + 2
+    [SP] := OP
+\end{verbatim}
+                    \instr{PUSHF}{01 04}{Nukopijuoja FLAGS registro reikšmę į steką.}
+                    Pseudokodas:
+\begin{verbatim}
+     SP  :=  SP + 2
+    [SP] := [FLAGS ]
+\end{verbatim}
                 \paragraph{Aritmetinės operacijos}
-                    \begin{center}
-                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
-                            \noalign{\hrule height 1pt}
-                            Mnemonika    & Kodas          & Aprašymas                                                                               \\
-                            \noalign{\hrule height 1pt}
-                            \texttt{ADD} & \texttt{02 00} & Sudeda du steke esančius žodžius ir patalpina rezultatą steko viršūnėje                 \\
-                            \hline
-                            \texttt{DEC} & \texttt{02 01} & Steko viršūnėje esančio žodžio reikšmę sumažina vienetu                                 \\
-                            \hline
-                            \texttt{DIV} & \texttt{02 02} & Padalina pirmąjį steke esantį žodį iš antrojo ir patalpina rezultatą steko viršūnėje    \\
-                            \hline
-                            \texttt{INC} & \texttt{02 03} & Steko viršūnėje esančio žodžio reikšmę padidina vienetu                                 \\
-                            \hline
-                            \texttt{MUL} & \texttt{02 04} & Sudaugina du steke esančius žodžius ir patalpina rezultatą steko viršūnėje              \\
-                            \hline
-                            \texttt{SUB} & \texttt{02 05} & Atima antrąjį steke esantį žodį iš pirmojo ir patalpina rezultatą steko viršūnėje       \\
-                            \noalign{\hrule height 1pt}
-                        \end{tabular}
-                    \end{center}
+                    \instr{ADD}{02 00}{Sudeda du steke esančius žodžius ir patalpina rezultatą steko viršūnėje.}
+                    \instr{CMP}{02 01}{Palygina du steke esančius žodžius.}
+                    \instr{DEC}{02 02}{Steko viršūnėje esančio žodžio reikšmę sumažina vienetu.}
+                    \instr{DIV}{02 03}{Padalina pirmąjį steke esantį žodį iš antrojo ir patalpina rezultatą steko viršūnėje.}
+                    \instr{INC}{02 04}{Steko viršūnėje esančio žodžio reikšmę padidina vienetu.}
+                    \instr{MUL}{02 05}{Sudaugina du steke esančius žodžius ir patalpina rezultatą steko viršūnėje.}
+                    \instr{SUB}{02 06}{Atima antrąjį steke esantį žodį iš pirmojo ir patalpina rezultatą steko viršūnėje.}
                 \paragraph{Loginės operacijos}
-                    \begin{center}
-                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
-                            \noalign{\hrule height 1pt}
-                            Mnemonika    & Kodas          & Aprašymas                                                                                      \\
-                            \noalign{\hrule height 1pt}
-                            \texttt{AND} & \texttt{03 00} & Atlieka dviejų steke esančių žodžių konjunkciją ir patalpina rezultatą steko viršūnėje         \\
-                            \hline
-                            \texttt{NOT} & \texttt{03 01} & Atlieka steko viršūnėje esančio žodžio inversiją                                               \\
-                            \hline
-                            \texttt{OR}  & \texttt{03 02} & Atlieka dviejų steke esančių žodžių disjunkciją ir patalpina rezultatą steko viršūnėje         \\
-                            \hline
-                            \texttt{XOR} & \texttt{03 03} & Atlieka dviejų steke esančių žodžių griežtą disjunkciją ir patalpina rezultatą steko viršūnėje \\
-                            \noalign{\hrule height 1pt}
-                        \end{tabular}
-                    \end{center}
+                    \instr{AND}{03 00}{Atlieka dviejų steke esančių žodžių konjunkciją ir patalpina rezultatą steko viršūnėje.}
+                    \instr{NOT}{03 01}{Atlieka steko viršūnėje esančio žodžio inversiją.}
+                    \instr{OR}{03 02}{Atlieka dviejų steke esančių žodžių disjunkciją ir patalpina rezultatą steko viršūnėje.}
+                    \instr{XOR}{03 03}{Atlieka dviejų steke esančių žodžių griežtą disjunkciją ir patalpina rezultatą steko viršūnėje.}
                 \paragraph{Valdymo operacijos}
-                    \begin{center}
-                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
-                            \noalign{\hrule height 1pt}
-                            Mnemonika    & Kodas          & Aprašymas \\
-                            \noalign{\hrule height 1pt}
-                            \texttt{JMP}  & \texttt{04 00} & \\
-                            \hline
-                            \texttt{JC}   & \texttt{04 01} & \\
-                            \hline
-                            \texttt{JE}   & \texttt{04 02} & \\
-                            \hline
-                            \texttt{JG}   & \texttt{04 03} & \\
-                            \hline
-                            \texttt{JGE}  & \texttt{04 04} & \\
-                            \hline
-                            \texttt{JL}   & \texttt{04 05} & \\
-                            \hline
-                            \texttt{JLE}  & \texttt{04 06} & \\
-                            \hline
-                            \texttt{JNC}  & \texttt{04 07} & \\
-                            \hline
-                            \texttt{JNE}  & \texttt{04 08} & \\
-                            \hline
-                            \texttt{JNP}  & \texttt{04 09} & \\
-                            \hline
-                            \texttt{JP}   & \texttt{04 0A} & \\
-                            \hline
-                            \texttt{LOOP} & \texttt{04 0B} & \\
-                            \noalign{\hrule height 1pt}
-                        \end{tabular}
-                    \end{center}
+                    \instr{JMP}{04 00}{Besąlygiškai perduoda valdymą steko viršūnėje nurodytu adresu.}
+                    \instr{JC}{04 01}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{CF = 1}.}
+                    \instr{JE}{04 02}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{ZF = 1}.}
+                    \instr{JG}{04 03}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{ZF = 0} ir \texttt{OF = 1}.}
+                    \instr{JGE}{04 04}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{ZF = 0} ir \texttt{OF = 1} arba \texttt{ZF = 1}.}
+                    \instr{JL}{04 05}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{ZF = 0} ir \texttt{OF = 0}.}
+                    \instr{JLE}{04 06}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{ZF = 0} ir \texttt{OF = 0} arba \texttt{ZF = 1}.}
+                    \instr{JNC}{04 07}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{CF = 0}.}
+                    \instr{JNE}{04 08}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{ZF = 0}.}
+                    \instr{JNP}{04 09}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{PF = 0}.}
+                    \instr{JP}{04 0A}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{PF = 1}.}
+                    \instr{LOOP}{04 0B}{}
                 \paragraph{Įvesties/išvesties operacijos}
-                    \begin{center}
-                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
-                            \noalign{\hrule height 1pt}
-                            Mnemonika    & Kodas          & Aprašymas                                                                                                     \\
-                            \noalign{\hrule height 1pt}
-                            \texttt{IN}  & \texttt{05 00} & Iš įvesties srauto steko viršūnėje nurodytu adresu įrašo šešiolikos žodžių ilgio bloką                        \\
-                            \hline
-                            \texttt{OUT} & \texttt{05 01} & Į išvesties srautą nusiunčia steko viršūnėje nurodytame adrese esantį šešiolikos žodžių ilgio atminties bloką \\
-                            \noalign{\hrule height 1pt}
-                        \end{tabular}
-                    \end{center}
+                    \instr{IN}{05 00}{Iš įvesties srauto steko viršūnėje nurodytu adresu įrašo šešiolikos žodžių ilgio bloką.}
+                    \instr{OUT}{05 01}{Į išvesties srautą nusiunčia steko viršūnėje nurodytame adrese esantį šešiolikos žodžių ilgio atminties bloką.}
                 \paragraph{Darbo su atmintimi operacijos}
-                    \begin{center}
-                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
-                            \noalign{\hrule height 1pt}
-                            Mnemonika        & Kodas          & Aprašymas \\
-                            \noalign{\hrule height 1pt}
-                            \texttt{MOV}     & \texttt{06 00} & Pirmąjame steko viršūnės žodyje nurodytu adresu įrašo antrąjį steko viršūnės žodį \\
-                            \hline
-                            \texttt{SHREAD}  & \texttt{06 01} & Steko viršūnėje nurodytu adresu nukopijuoja bendros atminties srities turinį      \\
-                            \hline
-                            \texttt{SHWRITE} & \texttt{06 02} & Į bendrą atminties sritį įrašo steko viršūnėje nurodytame adrese esantį bloką     \\
-                            \noalign{\hrule height 1pt}
-                        \end{tabular}
-                    \end{center}
+                    \instr{MOV}{06 00}{Pirmąjame steko viršūnės žodyje nurodytu adresu įrašo antrąjį steko viršūnės žodį.}
+                    \instr{SHREAD}{06 01}{Steko viršūnėje nurodytu adresu nukopijuoja bendros atminties srities turinį.}
+                    \instr{SHWRITE}{06 02}{Į bendrą atminties sritį įrašo steko viršūnėje nurodytame adrese esantį bloką.}
 \end{document}
