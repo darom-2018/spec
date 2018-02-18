@@ -1,0 +1,60 @@
+Atmintis
+Modelyje dvi atminties rūšys:
+  Pagrindinė atmintis
+  Išorinė atmintis
+
+Atminties matavimo dydžiai:
+  Žodis - 2 baitai
+  Blokas - 16 žodžių
+  Viso pagrindinės atminties: 4*16 + 2 + 4 = 70 blokų
+
+Pagrindinė atmintis yra sudaryta iš šių dalių:
+  Supervizorinė atmintis
+    Paskirtis:
+      Realioje operacinėje sistemoje supervizorinė atmintis yra skirta saugoti
+      sisteminius procesus, kintamuosius, resursus bei mikroprogramas, interpretuojančias
+      virtualios mašinos komandas. Tačiau šias funkcijas mūsų modelyje atliks
+      aukšto lygio kalbos procesorius, todėl modelyje supervizorinei atminčiai vietos
+      pagrindinėje atmintyje neišskirsime.
+
+  Vartotojo atmintis
+    Tai atminties dalis, kurioje VM-os gali laikyti užduotis ir joms atlikti
+    reikalingus duomenis.
+
+    Dydis:
+      4 * 16 blokų (vieta reikalinga 4-ioms virtualioms mašinoms)
+
+  Bendra atminties sritis:
+    2 blokų atminties dalis, su kuria gali dirbti kelios virtualios mašinos vienu metu.
+    Dydis:
+      2 blokai
+
+  Puslapių lentelės
+    Vienas blokas skirtas vienos virtualios mašinos puslapių lentelei saugoti.
+    Dydis:
+      4 blokai
+
+Kietasis Diskas (Išorinė atmintis):
+  Kietasis diskas yra įrenginys iš kurio galima gauti informaciją. Joje galima
+  saugoti vartotojo parašytas programas.
+  Kitaip, nei pagrindinėje atmintyje, išorinė atmintis geba saugoti duomenis ilgą laiką, t.y. po
+  mašinos išjungimo, duomenys, kurie buvo išorinėje atmintyje joje turėtų išlikti nepakitę.
+  Pagrindinė atmintis to negarantuoja.
+
+Virtualios mašinos atmintis:
+  Kiekvienai virtualiai mašinai skiriama 16 blokų dydžio atminties sritis.
+
+  16 blokų skirtų virtualios mašinos atminčiai išskirstysime į tris sekcijas:
+    Duomenų segmentas (7 blokai):
+      Čia bus saugomi virtualios mašinos darbui reikalingi kintamieji.
+    Kodo segmentas (7 blokai):
+      Saugomos instrukcijos, užkrautos iš išorinės atminties.
+    Stekas (2 blokai):
+      Stekas reikalingas, nes visos artimetinės operacijos bus vykdomos
+      dirbant su steko viršutiniais elementais.
+
+  Kiekvienas virtualios atmintis blokas yra atvaizduojamas į vieną realios
+  atminties bloką, tačiau gali atsitikti taip, kad virtualiai mašinai priskirti
+  blokai realioje atmintyje nėra išsidėstę nuosekliai. Tai labai apsunkina darbą
+  su atmintimi, todėl bus naudojamas puslapiavimo mechanizmas, kuris leis dirbti
+  su virtualia atmintimi taip, tarsi ji būtų nuosekli.
