@@ -12,6 +12,7 @@ before_script:
         texlive-latex-recommended
         texlive-science
         texlive-xetex
+    - ./generate-head-info.sh
 
 script:
     - xelatex spec.tex
