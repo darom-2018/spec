@@ -1,0 +1,27 @@
+sudo: required
+dist: trusty
+
+before_script:
+    - sudo add-apt-repository -y ppa:jonathonf/texlive-2016
+    - sudo apt-get -q=2 update
+    - sudo apt-get install --no-install-recommends -y
+        lmodern
+        tex-gyre
+        texlive-fonts-recommended
+        texlive-latex-extra
+        texlive-latex-recommended
+        texlive-science
+        texlive-xetex
+
+script:
+    - xelatex spec.tex
+
+deploy:
+    provider: releases
+    api_key:
+        secure: "DX9Q24VKDOGGWcMwz/fsn6F2FZNbWvq1eB0b7As0bApSG/Wo3etCYaedKnfelq+fJwG99X+qZ+r3eWf6qWMbJv+MoBmQ+LexTFoaeMd29HbrD7t+BjtBTE4Zwq0jaDS3OqVpjang0EsYtUKYs3mrvJDd74AsF1I1YB+w1mGLTqOYGPfeWtSNEVlrC5NQKVGgRMtUSc9V7/ny/9bSxc/XOXq2k9gcc1Edlp6/z+OJnqUQzDrwx5pododCo1MUb2d0pd1wSXwsiKzBSBMH/95cDDNNy2l5EAETxE7NeI+KSZjZb3xyhB4benossvfm6plY1ovkhw1NPeFPlpmVWsoo+JqoCuufo3CDEuSUJ7jIRFVdl9f40y3tQC+eDQKf/q78ANMyXvPscFnrK+NlH1UZS1EMtW5KXoKpo49TP+86TJgp0N5Uu/0lbkddpyzHdhzC5Qxf5yBDq97pJDdmo6wgHY+1EbSogRDQFIoPmtuGyxeGTsZXxGQP6jaHOVForJ4fnNd5nfMA625/usFCcuJbYk+8wHQWAASTCpyToavJ0vyuGzZyppA3q7WLdxOxR8M5txR473Q6G7me89sGWkq4zxrxzIBpQtmoM8xD477Rdd+SL8QCAEFxe8gSfNtbYOnW796x3ZcosrkhwlFul0xRYUvyxKWqSyK6SlSOiGK0zFU="
+    file:
+        - spec.pdf
+    on:
+        tags: true
+    skip_cleanup: true
