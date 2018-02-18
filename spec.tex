@@ -145,11 +145,25 @@
                     \begin{center}
                         \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
                             \noalign{\hrule height 1pt}
-                            Mnemonika    & Kodas          & Aprašymas \\
+                            Mnemonika    & Kodas          & Aprašymas                                                                                                     \\
                             \noalign{\hrule height 1pt}
-                            \texttt{IN}  & \texttt{05 00} & \\
+                            \texttt{IN}  & \texttt{05 00} & Iš įvesties srauto steko viršūnėje nurodytu adresu įrašo šešiolikos žodžių ilgio bloką                        \\
                             \hline
-                            \texttt{OUT} & \texttt{05 01} & \\
+                            \texttt{OUT} & \texttt{05 01} & Į išvesties srautą nusiunčia steko viršūnėje nurodytame adrese esantį šešiolikos žodžių ilgio atminties bloką \\
+                            \noalign{\hrule height 1pt}
+                        \end{tabular}
+                    \end{center}
+                \paragraph{Darbo su atmintimi operacijos}
+                    \begin{center}
+                        \begin{tabular}{? p{3cm} ? l ? p{8cm} ?}
+                            \noalign{\hrule height 1pt}
+                            Mnemonika        & Kodas          & Aprašymas \\
+                            \noalign{\hrule height 1pt}
+                            \texttt{MOV}     & \texttt{06 00} & Pirmąjame steko viršūnės žodyje nurodytu adresu įrašo antrąjį steko viršūnės žodį \\
+                            \hline
+                            \texttt{SHREAD}  & \texttt{06 01} & Steko viršūnėje nurodytu adresu nukopijuoja bendros atminties srities turinį      \\
+                            \hline
+                            \texttt{SHWRITE} & \texttt{06 02} & Į bendrą atminties sritį įrašo steko viršūnėje nurodytame adrese esantį bloką     \\
                             \noalign{\hrule height 1pt}
                         \end{tabular}
                     \end{center}
