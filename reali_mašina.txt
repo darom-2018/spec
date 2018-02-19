@@ -1,0 +1,75 @@
+REALIOS MAŠINOS MODELIS
+Reali mašina – tai kompiuteris. Kad būtų paprasčiau analizuoti bei įsisavinti OS veikimo principus, naudosime realios mašinos modelį.
+
+Realios mašinos modelis turi šiuos esminius komponentus:
+    • Centrinis procesorius
+    • Atmintis
+        ◦ Supervizorinė atmintis
+        ◦ Vartotojo atmintis
+    • Išorinės atminties įrenginys (kietasis diskas)
+    • Įvesties įrenginys (klaviatūra)
+    • Išvesties įrenginys (ekranas)
+
+<BRĖŽINYS>
+
+
+CENTRINIO PROCESORIAUS REŽIMAI, ATMINTIES TIPAI
+Centrinis procesorius (toliau procesorius) – vienas pagrindinių kompiuterio komponentų, kurio paskirtis skaityti komandas iš atminties ir jas interpretuoti. Procesorius gali dirbti dvejais režimais – supervizoriaus ir vartotojo režimu.
+
+Supervizoriaus (neapribotu) režimu komandos yra skaitomos iš supervizorinės atminties ir yra betarpiškai apdorojamos aukšto lygio kalbos procesoriaus. Šiame režime gali būti vykdomos bet kokios architektūros instrukcijos, inicijuotos įvesties ir išvesties operacijos, pasiekiama bet kokia vieta atmintyje, modifikuojamos visų registrų reikšmės.
+
+Vartotojo režimu aukšto lygio kalbos procesorius vykdo tam tikrą programą. Šiame režime yra imituojamas virtualios mašinos procesorius ir yra prieinama tik prie vartotojo atmintyje esančių programų per puslapiavimo mechanizmą. 
+
+Šie du režimai leidžia operacinei sistemai turėti daugiau privilegijų nei vykdomosioms programoms. Šių režimų pagrindinė paskirtis – saugumas ir stabilumas. Pavyzdžiui, tik operacinė sistema gali puslapius priskirti programoms, ko kitos programos, vykdomos operacinės sistemos aplinkoje, padaryti negalėtų.
+
+
+CENTRINIO PROCESORIAUS REGISTRAI
+Procesorius turi šiuos registrus:
+    • MODE – registras, kuris nusako, kokiu režimu dirba procesorius.
+    • PTR – keturių baitų puslapių lentelės registras.
+    • MP – registras rodantis į bendrą atmintį.
+    • PC – dviejų baitų virtualios mašinos programos skaitiklis.
+    • SP – registras, rodantis į steko viršūnę.
+    • TI – taimerio registras.
+    • PI – programinių pertraukimų registras.
+    • SI – supervizorinių pertraukimų registras.
+    • CF – registras, kuris nusako, ar atlikus paskutinę aritmetinę operaciją, apsivertė visi žodžio bitai.
+    • PF – registras, kuris nusako, ar paskutinės operacijos rezultatas yra lyginis skaičius.
+    • ZF – registras, kuris nusako, ar paskutinės operacijos rezultatas yra lygus nuliui.
+
+
+TAIMERIS
+Taimeris – mechanizmas, skirtas suderinti lygiagretų programų veikimą. Mechanizmo veikimo principas – užduoties  vykdymas tam tikrą laiko tarpą (laiko momentų sumą). Čia laikysime, kad vienas laiko momentas – vienas užduoties taktas.
+
+Laikysime, kad įvesties/išvesties operacijos bus atliekamos per tris taktus, o visos kitos – per vieną.
+
+Tarkim, pradedame vykdyti virtualios mašinos užduotį. Tada registro TI reikšmė tam tikrai reikšmei, tarkim, T1 = 15. Įvykdžius vieną instrukciją, registro T1 reikšmė yra mažinama, o pasiekus nulį, yra išsiunčiamas signalas – pertraukimas.
+
+
+PERTRAUKIMAI
+Pertraukimai – signalai, išsiųsti techninės ar programinės įrangos ir skirti procesoriui, pranešti apie apie įvykusius įvykius, į kuriuos reikia nedelsiant sureaguoti. Sistemai aptikus pertraukimą yra nutraukiamas vartotojo programos vykdymas, išsaugant virtualios mašinos registrų reikšmes ir perjungiant procesorių į supervizorinį režimą, kuriame nustatomas pertraukimo tipas ir yra iškviečiama atitinkama pertraukimą apdorojanti programa. Vėliau procesorius grįžta į vartotojo režimą, atstatomi visi registrai ir tęsiamas virtualios mašinos darbas.
+
+Pertraukimų tipai:
+    • Programiniai (registras PI). Kyla virtualios mašinos vykdymo metu, kai yra atliekamas neleistinas veiksmas ar nustatoma neleistina reikšmė.
+        ◦ PI = 0
+        ◦ PI = 1
+		  ...
+    • Supervizoriniai (registras SI). Kyla virtualios mašinos vykdymo metu, kai yra atliekamas veiksmas, kuris gali būti įvykdomas tik supervizoriaus režime.
+        ◦ SI = 0
+        ◦ SI = 1
+		  ...
+    • Taimerio (registras TI). Kyla taimerio skaitliukui pasiekus nulinę reikšmę.
+        ◦ TI = 0 – taimerio skaitliukas yra lygus nuliui.
+	
+
+ATMINTIS
+<ŽR. „atmintys.txt“>
+
+
+KANALŲ ĮRENGINYS
+Kanalų įrenginys leidžia dirbti su įvesties/išvesties įrenginiais. Veiksmai kanalų įrenginyje yra vykdomi tik tada, kai procesorius dirba supervizoriaus režime.
+
+Kanalų įrenginio registrai:
+    • 
+    • 
+	  ...
