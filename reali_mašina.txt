@@ -20,15 +20,15 @@ Supervizoriaus (neapribotu) režimu komandos yra skaitomos iš supervizorinės a
 
 Vartotojo režimu aukšto lygio kalbos procesorius vykdo tam tikrą programą. Šiame režime yra imituojamas virtualios mašinos procesorius ir yra prieinama tik prie vartotojo atmintyje esančių programų per puslapiavimo mechanizmą. 
 
-Šie du režimai leidžia operacinei sistemai turėti daugiau privilegijų nei vykdomosioms programoms. Šių režimų pagrindinė paskirtis – saugumas ir stabilumas. Pavyzdžiui, tik operacinė sistema gali puslapius priskirti programoms, ko kitos programos, vykdomos operacinės sistemos aplinkoje, padaryti negalėtų.
+Šie du režimai leidžia operacinei sistemai turėti daugiau privilegijų nei vykdomosioms programoms. Šių režimų pagrindinė paskirtis – saugumas ir stabilumas. Pavyzdžiui, tik operacinė sistema gali puslapius priskirti programoms. To kitos programos, vykdomos operacinės sistemos aplinkoje, padaryti negalėtų.
 
 
 CENTRINIO PROCESORIAUS REGISTRAI
 Procesorius turi šiuos registrus:
     • MODE – registras, kuris nusako, kokiu režimu dirba procesorius.
     • PTR – keturių baitų puslapių lentelės registras.
-    • MP – registras rodantis į bendrą atmintį.
-    • PC – dviejų baitų virtualios mašinos programos skaitiklis.
+    • MP – registras, rodantis į bendrą atmintį.
+    • PC – dvejų baitų virtualios mašinos programos skaitiklis.
     • SP – registras, rodantis į steko viršūnę.
     • TI – taimerio registras.
     • PI – programinių pertraukimų registras.
@@ -43,11 +43,11 @@ Taimeris – mechanizmas, skirtas suderinti lygiagretų programų veikimą. Mech
 
 Laikysime, kad įvesties/išvesties operacijos bus atliekamos per tris taktus, o visos kitos – per vieną.
 
-Tarkim, pradedame vykdyti virtualios mašinos užduotį. Tada registro TI reikšmė tam tikrai reikšmei, tarkim, T1 = 15. Įvykdžius vieną instrukciją, registro T1 reikšmė yra mažinama, o pasiekus nulį, yra išsiunčiamas signalas – pertraukimas.
+Tarkim, pradedame vykdyti virtualios mašinos užduotį. Tada registro TI reikšmė tam tikrai reikšmei, tarkim, T1 = 15. Įvykdžius vieną instrukciją, registro T1 reikšmė yra mažinama, o pasiekus nulį, iššaukiamas pertraukimas.
 
 
 PERTRAUKIMAI
-Pertraukimai – signalai, išsiųsti techninės ar programinės įrangos ir skirti procesoriui, pranešti apie apie įvykusius įvykius, į kuriuos reikia nedelsiant sureaguoti. Sistemai aptikus pertraukimą yra nutraukiamas vartotojo programos vykdymas, išsaugant virtualios mašinos registrų reikšmes ir perjungiant procesorių į supervizorinį režimą, kuriame nustatomas pertraukimo tipas ir yra iškviečiama atitinkama pertraukimą apdorojanti programa. Vėliau procesorius grįžta į vartotojo režimą, atstatomi visi registrai ir tęsiamas virtualios mašinos darbas.
+Pertraukimai – signalai, išsiųsti techninės ar programinės įrangos ir skirti procesoriui. Jų paskirtis - pranešti apie įvykusius įvykius, į kuriuos reikia nedelsiant sureaguoti. Sistemai aptikus pertraukimą yra nutraukiamas vartotojo programos vykdymas, išsaugant virtualios mašinos registrų reikšmes ir perjungiant procesorių į supervizorinį režimą, kuriame nustatomas pertraukimo tipas ir yra iškviečiama atitinkama pertraukimą apdorojanti programa. Vėliau procesorius grįžta į vartotojo režimą, atstatomi visi registrai ir tęsiamas virtualios mašinos darbas.
 
 Pertraukimų tipai:
     • Programiniai (registras PI). Kyla virtualios mašinos vykdymo metu, kai yra atliekamas neleistinas veiksmas ar nustatoma neleistina reikšmė.
