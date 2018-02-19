@@ -13,7 +13,7 @@ Realios mašinos modelis turi šiuos esminius komponentus:
 <BRĖŽINYS>
 
 
-CENTRINIO PROCESORIAUS REŽIMAI, ATMINTIES TIPAI
+CENTRINIO PROCESORIAUS REŽIMAI
 Centrinis procesorius (toliau procesorius) – vienas pagrindinių kompiuterio komponentų, kurio paskirtis skaityti komandas iš atminties ir jas interpretuoti. Procesorius gali dirbti dvejais režimais – supervizoriaus ir vartotojo režimu.
 
 Supervizoriaus (neapribotu) režimu komandos yra skaitomos iš supervizorinės atminties ir yra betarpiškai apdorojamos aukšto lygio kalbos procesoriaus. Šiame režime gali būti vykdomos bet kokios architektūros instrukcijos, inicijuotos įvesties ir išvesties operacijos, pasiekiama bet kokia vieta atmintyje, modifikuojamos visų registrų reikšmės.
