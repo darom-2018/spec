@@ -6,9 +6,10 @@ Realios mašinos modelis turi šiuos esminius komponentus:
     • Atmintis
         ◦ Supervizorinė atmintis
         ◦ Vartotojo atmintis
-    • Išorinės atminties įrenginys (kietasis diskas)
-    • Įvesties įrenginys (klaviatūra)
-    • Išvesties įrenginys (ekranas)
+    • Kanalų įrenginys
+        ◦ Išorinės atminties įrenginys (kietasis diskas)
+        ◦ Įvesties įrenginys (klaviatūra)
+        ◦ Išvesties įrenginys (ekranas)
 
 <BRĖŽINYS>
 
