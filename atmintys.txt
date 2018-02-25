@@ -22,7 +22,7 @@ Pagrindinė atmintis yra sudaryta iš šių dalių:
     reikalingus duomenis.
 
     Dydis:
-      4 * 16 blokų (vieta reikalinga 4-ioms virtualioms mašinoms)
+      4 * 16 blokų (vieta reikalinga 4-ioms maksimaliai didelėms virtualioms mašinoms)
 
   Bendra atminties sritis:
     2 blokų atminties dalis, su kuria gali dirbti kelios virtualios mašinos vienu metu.
@@ -42,16 +42,19 @@ Kietasis Diskas (Išorinė atmintis):
   Pagrindinė atmintis to negarantuoja.
 
 Virtualios mašinos atmintis:
-  Kiekvienai virtualiai mašinai skiriama 16 blokų dydžio atminties sritis.
+  Kiekvienai virtualiai mašinai skiriama iki 16 blokų dydžio atminties sritis.
 
   16 blokų skirtų virtualios mašinos atminčiai išskirstysime į tris sekcijas:
-    Duomenų segmentas (7 blokai):
+    Duomenų segmentas:
       Čia bus saugomi virtualios mašinos darbui reikalingi kintamieji.
-    Kodo segmentas (7 blokai):
+    Kodo segmentas:
       Saugomos instrukcijos, užkrautos iš išorinės atminties.
-    Stekas (2 blokai):
+    Stekas:
       Stekas reikalingas, nes visos artimetinės operacijos bus vykdomos
       dirbant su steko viršutiniais elementais.
+      
+    Segmentų dydžiai skirtingose VM gali būti skirtingi, nes kiekvienai virtualiai mašinai 
+    gali reikti skirtingo kiekio atminties instrukcijoms bei duomenims saugoti.
 
   Kiekvienas virtualios atmintis blokas yra atvaizduojamas į vieną realios
   atminties bloką, tačiau gali atsitikti taip, kad virtualiai mašinai priskirti
