@@ -6,8 +6,13 @@
 \usepackage{gitinfo2}
 \usepackage{hyperref}
 \usepackage{microtype}
+\usepackage{polyglossia}
 \usepackage{scrlayer-scrpage}
 \usepackage{xcolor}
+
+\linespread{1.3}
+
+\setmainlanguage{lithuanian}
 
 \setmainfont{TeX Gyre Termes}
 \setmonofont{TeX Gyre Cursor}
@@ -19,63 +24,96 @@
 
 \definecolor{lightgray}{gray}{0.8}
 
-\begin{document}
-\newcommand{\instr}[3]{\subparagraph{\makebox[6em][l]{\texttt{#1}}} (\texttt{#2})\par#3\par}
+\setlength{\headheight}{\baselineskip}
+\setlength{\footheight}{\baselineskip}
 
+\begin{document}
+    \newcommand{\instr}[3]{\subparagraph{\makebox[6em][l]{\texttt{#1}}} (\texttt{#2})\par#3\par}
     \section{Reali mašina}
+        \subsection{Procesorius}
+            \subsubsection{Registrai}
+                \paragraph{\makebox[3em][l]{PC}} Programų skaitiklis.
+                \paragraph{\makebox[3em][l]{SP}} Steko nuoroda.
+                \paragraph{\makebox[3em][l]{FLAGS}} Paskutinės aritmetinės ar loginės operacijos požymiai.
+                \paragraph{\makebox[3em][l]{PTR}} Puslapių lentelės registras. \mbox {} \\
+                    \par
+                    \begin{bytefield}[endianness=big]{32}
+                        \bitheader{0-31} \\
+                        \bitbox{8}{$a_{0}$}
+                        \bitbox{8}{$a_{1}$}
+                        \bitbox{8}{$a_{2}$}
+                        \bitbox{8}{$a_{3}$}
+                    \end{bytefield}
+                    \par
+                    $a_{0}$ - programos dydis;
+                    \par
+                    $a_{1}$ - puslapių lentelės dydis;
+                    \par
+                    $a_{2}$ - bloko numeris, kuriame saugoma lentelė;
+                    \par
+                    $a_{3}$ - poslinkis bloke.
+                \paragraph{\makebox[3em][l]{SHM}} Bendros atminties srities nuoroda.
+                \paragraph{\makebox[3em][l]{PI}} Programinių pertraukimų registras.
+                \paragraph{\makebox[3em][l]{SI}} Supervizorinių pertraukimų registras.
+                \paragraph{\makebox[3em][l]{TI}} Taimerio registras.
+        \subsection{Atmintis}
+            Modelyje naudojami tokie dydžiai:
+            \begin{itemize}
+                \item žodis: du baitai;
+                \item blokas: šešiolika žodžių.
+            \end{itemize}
+            \subsubsection{Supervizorinė atmintis}
+                Supervizorinė atmintis skirta saugoti sisteminius procesus, kintamuosius, resursus ir mikroprogramas, interpretuojančias virtualios mašinos komandas. Modelyje supervizorinė atmintis nėra realizuojama; komandų vykdymą ir resursų valdymą atliks aukšto lygio kalbos procesorius. Supervizorinei atminčiai galima priskirti puslapių lenteles, kurioms išskirsime keturis blokus.
+            \subsubsection{Vartotojo atmintis}
+                Vartotojo atmintis skirta virtualių mašinų atmintims, jos dydis - 64 blokai (užtektinai keturioms maksimaliai didelėms virtualioms mašinoms).
+            \subsubsection{Bendra atminties sritis}
+                Virtualių mašinų reikmėms išskiriama bendra atminties sritis, kurioje mašinos gali dalintis duomenimis. Srities dydis - du blokai.
+            \subsubsection{Išorinė atmintis}
+                Išorinėje atmintyje saugomos programos. Realizuojama failu, kurio dydis dirbtinai neribojamas.
+        \subsection{Kanalų įrenginys}
+            Kanalų įrenginys yra atsakingas už duomenų persiuntimą tarp skirtingų mašinos komponentų. Įrenginio darbas organizuojamas nustatant specialius registrus:
+            \begin{itemize}
+                \item \textbf{SB} (Source Block) - bloko numeris, iš kurio bus kopijuojama;
+                \item \textbf{DB} (Destination Block) - bloko numeris, į kurį bus kopijuojama;
+                \item \textbf{SC} (Source Channel):
+                    \subitem 1 - vartotojo atmintis;
+                    \subitem 2 - supervizorinė atmintis;
+                    \subitem 3 - išorinė atmintis;
+                    \subitem 4 - standartinė įvestis;
+                \item \textbf{DC} (Destination Channel):
+                    \subitem 1 - vartotojo atmintis;
+                    \subitem 2 - supervizorinė atmintis;
+                    \subitem 3 - išorinė atmintis;
+                    \subitem 4 - standartinė išvestis.
+            \end{itemize}
+            Kanalų įrenginys yra paslėptas nuo virtualios mašinos. Virtualios mašinos gali dirbti tik su virtualia atmintimi, virtualia klaviatūra ir monitoriumi. Darbui su virtualiais įvedimo ir išvedimo srautais yra naudojamos instrukcijos \texttt{IN} ir \texttt{OUT} (bei variantai). Šios instrukcijos atitinkamai nustato kanalų įrenginio registrų reikšmes ir blokuoja tolesnį vykdymą tuo atveju, kai kanalas yra užimtas.
+    \pagebreak
     \section{Virtuali mašina}
         \subsection{Procesorius}
             \subsubsection{Registrai}
-                \paragraph{PC} \mbox{} \\
-                    Dviejų baitų dydžio registras, kuriame saugomas adresas instrukcijos, kuri bus vykdoma po dabartinės.
-                \paragraph{SP} \mbox{} \\
-                    Dviejų baitų dydžio registras, kuriame saugomas steko viršūnės adresas.
-                \paragraph{FLAGS} \mbox{} \\
-                    Dviejų baitų dydžio registras, kuriame saugomi paskutinės aritmetinės ar loginės operacijos požymiai.
-                    \begin{center}
-                        \begin{bytefield}[bitwidth=1.5em,endianness=big]{16}
-                            \bitheader{0-15} \\
-                            \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{CF}
-                            \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{OF}
-                            \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{PF}
-                            \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{ZF}
-                        \end{bytefield}
-                    \end{center}
+                \paragraph{\makebox[4em][l]{PC}} Programų skaitiklis.
+                \paragraph{\makebox[4em][l]{SP}} Steko nuoroda.
+                \paragraph{\makebox[4em][l]{FLAGS}} Paskutinės aritmetinės ar loginės operacijos požymiai. \mbox{} \\
+                    \par
+                    \begin{bytefield}[bitwidth=1.5em,endianness=big]{16}
+                        \bitheader{0-15} \\
+                        \bitbox{7}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{CF}
+                        \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{PF}
+                        \bitbox{3}{\color{lightgray}\rule{\width}{\height}} & \bitbox{1}{ZF}
+                    \end{bytefield}
             \subsubsection{Instrukcijų rinkinys}
+                Kur nurodyta, steko argumentai išvardinti tvarka, kuria yra skaitomi iš steko.
                 \paragraph{Bendros paskirties operacijos}
                     \instr{NOP}{00 00}{Neatlieka jokio veiksmo.}
                     \instr{HALT}{00 01}{Sustabdo procesoriaus darbą (nutraukia programos vykdymą).}
                 \paragraph{Steko operacijos}
                     \instr{DUP}{01 00}{Padaro steko viršūnės kopiją.}
-                    Pseudokodas:
-\begin{verbatim}
-     SP  :=  SP + 2
-    [SP] := [SP - 2]
-\end{verbatim}
-                    \instr{POP m16}{01 01}{Nukopijuoja steko viršūnę į atminties vietą, nurodytą operande.}
-                    Pseudokodas:
-\begin{verbatim}
-    [OP] := [  SP  ]
-     SP  :=  SP - 2
-\end{verbatim}
-                    \instr{PUSH m16}{01 02}{Nukopijuoja žodį iš operande nurodytos vietos atmintyje į steką.}
-                    Pseudokodas:
-\begin{verbatim}
-     SP  :=  SP + 2
-    [SP] := [  OP  ]
-\end{verbatim}
-                    \instr{PUSH imm16}{01 03}{Nukopijuoja operando žodį į steką.}
-                    Pseudokodas:
-\begin{verbatim}
-     SP  := SP + 2
-    [SP] := OP
-\end{verbatim}
+                    \instr{POP}{01 01}{Nukopijuoja steko žodį į virtualios mašinos atmintį.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, kopijuojamas žodis.
+                    \instr{PUSH imm16}{01 02}{Nukopijuoja operando žodį į steką.}
+                    \instr{PUSHM}{01 03}{Į steką iš atminties nukopijuoja žodį.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
                     \instr{PUSHF}{01 04}{Nukopijuoja FLAGS registro reikšmę į steką.}
-                    Pseudokodas:
-\begin{verbatim}
-     SP  :=  SP + 2
-    [SP] := [FLAGS ]
-\end{verbatim}
                 \paragraph{Aritmetinės operacijos}
                     \instr{ADD}{02 00}{Sudeda du steke esančius žodžius ir patalpina rezultatą steko viršūnėje.}
                     \instr{CMP}{02 01}{Palygina du steke esančius žodžius.}
@@ -90,23 +128,48 @@
                     \instr{OR}{03 02}{Atlieka dviejų steke esančių žodžių disjunkciją ir patalpina rezultatą steko viršūnėje.}
                     \instr{XOR}{03 03}{Atlieka dviejų steke esančių žodžių griežtą disjunkciją ir patalpina rezultatą steko viršūnėje.}
                 \paragraph{Valdymo operacijos}
-                    \instr{JMP}{04 00}{Besąlygiškai perduoda valdymą steko viršūnėje nurodytu adresu.}
-                    \instr{JC}{04 01}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{CF = 1}.}
-                    \instr{JE}{04 02}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{ZF = 1}.}
-                    \instr{JG}{04 03}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{ZF = 0} ir \texttt{OF = 1}.}
-                    \instr{JGE}{04 04}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{ZF = 0} ir \texttt{OF = 1} arba \texttt{ZF = 1}.}
-                    \instr{JL}{04 05}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{ZF = 0} ir \texttt{OF = 0}.}
-                    \instr{JLE}{04 06}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{ZF = 0} ir \texttt{OF = 0} arba \texttt{ZF = 1}.}
-                    \instr{JNC}{04 07}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{CF = 0}.}
-                    \instr{JNE}{04 08}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{ZF = 0}.}
-                    \instr{JNP}{04 09}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{PF = 0}.}
-                    \instr{JP}{04 0A}{Perduoda valdymą adresu, nurodytu steko viršūnėje, kai \texttt{PF = 1}.}
-                    \instr{LOOP}{04 0B}{}
+                    \instr{JMP}{04 00}{Besąlygiškai atlieka šuolį į adresą.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{JC}{04 01}{Atlieka šuolį į adresą, kai \texttt{CF = 1}.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{JE}{04 02}{Atlieka šuolį į adresą, kai \texttt{ZF = 1}.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{JG}{04 03}{Atlieka šuolį į adresą, kai \texttt{ZF = 0} ir \texttt{CF = 1}.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{JGE}{04 04}{Atlieka šuolį į adresą, kai \texttt{ZF = 0} ir \texttt{CF = 1} arba \texttt{ZF = 1}.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{JL}{04 05}{Atlieka šuolį į adresą, kai \texttt{ZF = 0} ir \texttt{CF = 0}.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{JLE}{04 06}{Atlieka šuolį į adresą, kai \texttt{ZF = 0} ir \texttt{CF = 0} arba \texttt{ZF = 1}.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{JNC}{04 07}{Atlieka šuolį į adresą, kai \texttt{CF = 0}.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{JNE}{04 08}{Atlieka šuolį į adresą, kai \texttt{ZF = 0}.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{JNP}{04 09}{Atlieka šuolį į adresą, kai \texttt{PF = 0}.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{JP}{04 0A}{Atlieka šuolį į adresą, kai \texttt{PF = 1}.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{LOOP}{04 0B}{Atlieka šuolį į adresą, jei skaitiklio reikšmė didesnė už nulį.}
+                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, skaitiklis.
                 \paragraph{Įvesties/išvesties operacijos}
-                    \instr{IN}{05 00}{Iš įvesties srauto steko viršūnėje nurodytu adresu įrašo šešiolikos žodžių ilgio bloką.}
-                    \instr{OUT}{05 01}{Į išvesties srautą nusiunčia steko viršūnėje nurodytame adrese esantį šešiolikos žodžių ilgio atminties bloką.}
-                \paragraph{Darbo su atmintimi operacijos}
-                    \instr{MOV}{06 00}{Pirmąjame steko viršūnės žodyje nurodytu adresu įrašo antrąjį steko viršūnės žodį.}
-                    \instr{SHREAD}{06 01}{Steko viršūnėje nurodytu adresu nukopijuoja bendros atminties srities turinį.}
-                    \instr{SHWRITE}{06 02}{Į bendrą atminties sritį įrašo steko viršūnėje nurodytame adrese esantį bloką.}
+                    \instr{IN}{05 00}{Iš įvesties srauto į virtualios mašinos atmintį nukopijuoja ASCII koduote užkoduotus duomenis.}
+                    \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{OUT}{05 01}{Į išvesties srautą nusiunčia ASCII koduote užkoduotus duomenis.}
+                    \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{OUTI}{05 02}{Į išvesties srautą skaitiniu pavidalu nusiunčia žodį iš steko viršūnės.}
+                \paragraph{Darbo su bendra atminties sritimi operacijos}
+                    \instr{SHREAD}{06 00}{Iš bendros atminties srities nukopijuoja duomenis į virtualios mašinos atmintį.}
+                    \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, žodžio numeris bendroje atminties srityje, bloko numeris bendroje atminties srityje.
+                    \instr{SHWRITE}{06 01}{Iš virtualios mašinos nukopijuoja duomenis į bendrą atminties sritį.}
+                    \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, žodžio numeris bendroje atminties srityje, bloko numeris bendroje atminties srityje.
+        \subsection{Atmintis}
+            Virtualios mašinos atmintį sudaro šešiolika vartotojo atminties blokų, kurie yra suskirstyti į segmentus pačios programos. Naudojami segmentai:
+            \begin{itemize}
+                \item kodo,
+                \item duomenų,
+                \item steko.
+            \end{itemize}
+            \subsubsection{Puslapiavimo mechanizmas}
+                Puslapiavimo mechanizmas įgyvendinamas remiantis dviem dalykais: realios mašinos procesoriaus registru \texttt{PTR} bei virtualių mašinų puslapių lentelėmis.
 \end{document}
