@@ -17,6 +17,7 @@
 \setmainfont{TeX Gyre Termes}
 \setmonofont{TeX Gyre Cursor}
 
+
 \ohead{Release \gitDescribe\ (\gitCommitterDate)}
 \cfoot*{\pagemark}
 
@@ -80,13 +81,18 @@
                     \subitem 2 - supervizorinė atmintis;
                     \subitem 3 - išorinė atmintis;
                     \subitem 4 - standartinė įvestis;
+                    \subitem 5 - LED lemputė;
                 \item \textbf{DC} (Destination Channel):
                     \subitem 1 - vartotojo atmintis;
                     \subitem 2 - supervizorinė atmintis;
                     \subitem 3 - išorinė atmintis;
                     \subitem 4 - standartinė išvestis.
+                    \subitem 5 - LED lemputė;                    
             \end{itemize}
             Kanalų įrenginys yra paslėptas nuo virtualios mašinos. Virtualios mašinos gali dirbti tik su virtualia atmintimi, virtualia klaviatūra ir monitoriumi. Darbui su virtualiais įvedimo ir išvedimo srautais yra naudojamos instrukcijos \texttt{IN} ir \texttt{OUT} (bei variantai). Šios instrukcijos atitinkamai nustato kanalų įrenginio registrų reikšmes ir blokuoja tolesnį vykdymą tuo atveju, kai kanalas yra užimtas.
+            \subsubsection{LED lemputė}
+            	LED lemputė - įrenginys, turintis vieną bloką atminties, kuriame saugomos tris reikšmės. Tos reikšmės atitinką spalvos, kurią dabar atkuria lemputė, RGB kodą. Jeigu savo programoje norėtume išjungti lemputę, turėtume nustatyti visas tris RGB reikšmes į 0. Darbui su lempute naudojama komanda
+            	\texttt{LED}.
     \pagebreak
     \section{Virtuali mašina}
         \subsection{Procesorius}
@@ -163,6 +169,9 @@
                     \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, žodžio numeris bendroje atminties srityje, bloko numeris bendroje atminties srityje.
                     \instr{SHWRITE}{06 01}{Iš virtualios mašinos nukopijuoja duomenis į bendrą atminties sritį.}
                     \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, žodžio numeris bendroje atminties srityje, bloko numeris bendroje atminties srityje.
+                \paragraph{Papildomo įrenginio valdymas}
+					\instr{LED}{07 00}{Nustato lemputės spalvą}
+					\emph{Steko argumentai:}{Red Green ir Blue spalvų vertės. (0,0,0) jei norime išjungti lemputę}
         \subsection{Atmintis}
             Virtualios mašinos atmintį sudaro šešiolika vartotojo atminties blokų, kurie yra suskirstyti į segmentus pačios programos. Naudojami segmentai:
             \begin{itemize}
@@ -172,4 +181,18 @@
             \end{itemize}
             \subsubsection{Puslapiavimo mechanizmas}
                 Puslapiavimo mechanizmas įgyvendinamas remiantis dviem dalykais: realios mašinos procesoriaus registru \texttt{PTR} bei virtualių mašinų puslapių lentelėmis.
+		\subsection{Užduoties pavyzdys}
+			\begin{itemize}
+				\item[] \$PROGRAM	
+				\item[] COUNTDOWN	\emph{//Užduoties pavadinimas}
+				\item [0] PUSH 0010	\emph{//Į steką įdedame reikšmė 10}
+				\item [4] OUTI		\emph{//Viršutinė steko reikšmė išvedama į ekraną}
+				\item [6] DEC		\emph{//Viršutinė steko reikšmė sumažinama vienetu}
+				\item [8] PUSH 0000	
+				\item [12] PUSH 0004
+				\item [16] JNE		\emph{//Jei ZF != 0 valdymas perduodamas komandai, kurios žodžio ir bloko numeriai yra steke}
+				\item [18] HALT		
+				\item[] \$END
+			\end{itemize}
+		
 \end{document}
