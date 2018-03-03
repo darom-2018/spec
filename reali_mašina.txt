@@ -19,7 +19,7 @@ Centrinis procesorius (toliau procesorius) – vienas pagrindinių kompiuterio k
 
 Supervizoriaus (neapribotu) režimu komandos yra skaitomos iš supervizorinės atminties ir yra betarpiškai apdorojamos aukšto lygio kalbos procesoriaus. Šiame režime gali būti vykdomos bet kokios architektūros instrukcijos, inicijuotos įvesties ir išvesties operacijos, pasiekiama bet kokia vieta atmintyje, modifikuojamos visų registrų reikšmės.
 
-Vartotojo režimu aukšto lygio kalbos procesorius vykdo tam tikrą programą. Šiame režime yra imituojamas virtualios mašinos procesorius ir yra prieinama tik prie vartotojo atmintyje esančių programų per puslapiavimo mechanizmą. 
+Vartotojo režimu aukšto lygio kalbos procesorius vykdo tam tikrą programą. Šiame režime aukšto lygio kalbos procesorius imituoja virtualios mašinos procesorių. Šiame režime yra prieinama tik prie vartotojo atmintyje esančių programų per puslapiavimo mechanizmą. 
 
 Šie du režimai leidžia operacinei sistemai turėti daugiau privilegijų nei vykdomosioms programoms. Šių režimų pagrindinė paskirtis – saugumas ir stabilumas. Pavyzdžiui, tik operacinė sistema gali puslapius priskirti programoms. To kitos programos, vykdomos operacinės sistemos aplinkoje, padaryti negalėtų.
 
@@ -28,6 +28,7 @@ CENTRINIO PROCESORIAUS REGISTRAI
 Procesorius turi šiuos registrus:
     • MODE – registras, kuris nusako, kokiu režimu dirba procesorius.
     • PTR – keturių baitų puslapių lentelės registras.
+    • DS – duomenų segmento registras.
     • MP – registras, rodantis į bendrą atmintį.
     • PC – dvejų baitų virtualios mašinos programos skaitiklis.
     • SP – registras, rodantis į steko viršūnę.
@@ -48,18 +49,25 @@ Tarkim, pradedame vykdyti virtualios mašinos užduotį. Tada registro TI reikš
 
 
 PERTRAUKIMAI
-Pertraukimai – signalai, išsiųsti techninės ar programinės įrangos ir skirti procesoriui. Jų paskirtis - pranešti apie įvykusius įvykius, į kuriuos reikia nedelsiant sureaguoti. Sistemai aptikus pertraukimą yra nutraukiamas vartotojo programos vykdymas, išsaugant virtualios mašinos registrų reikšmes ir perjungiant procesorių į supervizorinį režimą, kuriame nustatomas pertraukimo tipas ir yra iškviečiama atitinkama pertraukimą apdorojanti programa. Vėliau procesorius grįžta į vartotojo režimą, atstatomi visi registrai ir tęsiamas virtualios mašinos darbas.
+Pertraukimai – signalai, išsiųsti techninės ar programinės įrangos ir skirti procesoriui. Jų paskirtis - pranešti apie įvykusius įvykius, į kuriuos reikia nedelsiant sureaguoti. Sistemai aptikus pertraukimą (tam tikrą pertraukimo registro reikšmę) yra nutraukiamas vartotojo programos vykdymas, išsaugant virtualios mašinos registrų reikšmes ir perjungiant procesorių į supervizorinį režimą, kuriame nustatomas pertraukimo tipas ir yra iškviečiama atitinkama pertraukimą apdorojanti programa. Vėliau procesorius grįžta į vartotojo režimą, atstatomi visi registrai ir tęsiamas virtualios mašinos darbas.
 
 Pertraukimų tipai:
     • Programiniai (registras PI). Kyla virtualios mašinos vykdymo metu, kai yra atliekamas neleistinas veiksmas ar nustatoma neleistina reikšmė.
-        ◦ PI = 0
-        ◦ PI = 1
-		  ...
+        ◦ PI = 0 - pertraukimas neįvyko.
+        ◦ PI = 1 - neteisingas operacijos kodas.
+        ◦ PI = 2 - neteisingas operandas.
+        ◦ PI = 3 - neteisingas adresas.
+        ◦ PI = 4 - steko perpildymas.
+
     • Supervizoriniai (registras SI). Kyla virtualios mašinos vykdymo metu, kai yra atliekamas veiksmas, kuris gali būti įvykdomas tik supervizoriaus režime.
-        ◦ SI = 0
-        ◦ SI = 1
-		  ...
+        ◦ SI = 0 - pertraukimas neįvyko.
+        ◦ SI = 1 - vykdoma PUT instrukcija
+        ◦ SI = 2 - vykdoma PUTN instrukcija
+        ◦ SI = 3 - vykdoma GET instrukcija
+        ◦ SI = 4 - vykdoma GETN instrukcija
+
     • Taimerio (registras TI). Kyla taimerio skaitliukui pasiekus nulinę reikšmę.
+        ◦ TI != 0 – pertraukimas neįvyko.
         ◦ TI = 0 – taimerio skaitliukas yra lygus nuliui.
 	
 
@@ -68,9 +76,4 @@ ATMINTIS
 
 
 KANALŲ ĮRENGINYS
-Kanalų įrenginys leidžia dirbti su įvesties/išvesties įrenginiais. Veiksmai kanalų įrenginyje yra vykdomi tik tada, kai procesorius dirba supervizoriaus režime.
-
-Kanalų įrenginio registrai:
-    • 
-    • 
-	  ...
+<ŽR. „kanalu_irenginys.txt“>
