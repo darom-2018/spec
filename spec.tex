@@ -91,7 +91,7 @@
             \end{itemize}
             Kanalų įrenginys yra paslėptas nuo virtualios mašinos. Virtualios mašinos gali dirbti tik su virtualia atmintimi, virtualia klaviatūra ir monitoriumi. Darbui su virtualiais įvedimo ir išvedimo srautais yra naudojamos instrukcijos \texttt{IN} ir \texttt{OUT} (bei variantai). Šios instrukcijos atitinkamai nustato kanalų įrenginio registrų reikšmes ir blokuoja tolesnį vykdymą tuo atveju, kai kanalas yra užimtas.
             \subsubsection{LED lemputė}
-            	LED lemputė - įrenginys, turintis vieną bloką atminties, kuriame saugomos tris reikšmės. Tos reikšmės atitinką spalvos, kurią dabar atkuria lemputė, RGB kodą. Jeigu savo programoje norėtume išjungti lemputę, turėtume nustatyti visas tris RGB reikšmes į 0. Darbui su lempute naudojama komanda
+            	LED lemputė - įrenginys, turintis vieną bloką atminties, kuriame saugomos trys reikšmės. Tos reikšmės atitinka spalvos, kurią dabar atkuria lemputė, RGB kodą. Jeigu savo programoje norėtume išjungti lemputę, turėtume nustatyti visas tris RGB reikšmes į 0. Darbui su lempute naudojama komanda
             	\texttt{LED}.
     \pagebreak
     \section{Virtuali mašina}
@@ -99,6 +99,8 @@
             \subsubsection{Registrai}
                 \paragraph{\makebox[4em][l]{PC}} Programų skaitiklis.
                 \paragraph{\makebox[4em][l]{SP}} Steko nuoroda.
+                \paragraph{\makebox[3em][l]{DS}} Duomenų segmento nuoroda. 
+                	\par 1 baito dydžio registras, saugantis virtualios mašinos atminties bloko numerį, kuriame prasideda duomenų segmentas.
                 \paragraph{\makebox[4em][l]{FLAGS}} Paskutinės aritmetinės ar loginės operacijos požymiai. \mbox{} \\
                     \par
                     \begin{bytefield}[bitwidth=1.5em,endianness=big]{16}
@@ -120,6 +122,7 @@
                     \instr{PUSHM}{01 03}{Į steką iš atminties nukopijuoja žodį.}
                     \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
                     \instr{PUSHF}{01 04}{Nukopijuoja FLAGS registro reikšmę į steką.}
+                    \instr{PUSHDS}{01 05}{Nukopijuoja DS registro reikšmę į steką.} Naudojama, kai reikia pasiekti lokalius kintamuosius, saugomus virtualios mašinos duomenų segmente.
                 \paragraph{Aritmetinės operacijos}
                     \instr{ADD}{02 00}{Sudeda du steke esančius žodžius ir patalpina rezultatą steko viršūnėje.}
                     \instr{CMP}{02 01}{Palygina du steke esančius žodžius.}
@@ -185,13 +188,58 @@
 			\begin{itemize}
 				\item[] \$PROGRAM	
 				\item[] COUNTDOWN	\emph{//Užduoties pavadinimas}
-				\item [0] PUSH 0010	\emph{//Į steką įdedame reikšmė 10}
-				\item [4] OUTI		\emph{//Viršutinė steko reikšmė išvedama į ekraną}
-				\item [6] DEC		\emph{//Viršutinė steko reikšmė sumažinama vienetu}
-				\item [8] PUSH 0000	
-				\item [12] PUSH 0004
-				\item [16] JNE		\emph{//Jei ZF != 0 valdymas perduodamas komandai, kurios žodžio ir bloko numeriai yra steke}
-				\item [18] HALT		
+				\item[] \$DATA
+				\item[0] VIENAS
+				\item[3] DU
+				\item[4] TRYS
+				\item[] \$CODE
+				
+				\item [0] PUSH 0003	\emph{//Į steką įdedame skaitiklio reikšmę 3}
+				\item [2] DUP
+				\item [3] PUSH 0001
+				\item [5] CMP
+				\item [6] PUSH 0001
+				\item [8] PUSH 0001
+				\item [10] JNE
+				\item [11] PUSHDS
+				\item [12] PUSH 0000
+				\item [14] PUSH 0003
+				\item [16] OUT
+				\item [] PUSH zodzio numeris
+				\item [] PUSH bloko numeris
+				\item [] JMP	\emph{//Valdymo perdavimas už paskutinio checko}
+				
+				\item [17] DUP
+				\item [18] PUSH 0002
+				\item [20] CMP		
+				\item [21] PUSH 0000
+				\item [23] PUSH 0002
+				\item [25] JNE 		
+				\item [26] PUSHDS
+				\item [27] PUSH 0003
+				\item [29] PUSH 0001
+				\item [31] OUT
+				\item [] PUSH zodzio numeris
+				\item [] PUSH bloko numeris
+				\item [] JMP	\emph{//Valdymo perdavimas už paskutinio checko}
+				
+				\item [32] DUP
+				\item [33] PUSH 0003
+				\item [35] CMP		
+				\item [36] PUSH zodzio numeris
+				\item [38] PUSH bloko numeris								
+				\item [40] JNE 		
+				\item [41] PUSHDS
+				\item [42] PUSH 0004
+				\item [44] PUSH 0002
+				\item [46] OUT
+				
+				\item [47] DUP
+				\item [48] DEC
+				\item [49] PUSH 0000
+				\item [51] PUSH 0000
+				\item [53] LOOP
+				\item [54] HALT				
 				\item[] \$END
 			\end{itemize}
 		
