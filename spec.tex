@@ -5,6 +5,7 @@
 \usepackage{fontspec}
 \usepackage{gitinfo2}
 \usepackage{hyperref}
+\usepackage{listings}
 \usepackage{microtype}
 \usepackage{polyglossia}
 \usepackage{scrlayer-scrpage}
@@ -17,7 +18,6 @@
 \setmainfont{TeX Gyre Termes}
 \setmonofont{TeX Gyre Cursor}
 
-
 \ohead{Release \gitDescribe\ (\gitCommitterDate)}
 \cfoot*{\pagemark}
 
@@ -27,6 +27,13 @@
 
 \setlength{\headheight}{\baselineskip}
 \setlength{\footheight}{\baselineskip}
+
+\lstset{
+    basicstyle = \footnotesize\ttfamily,%
+    escapeinside = {/*}{*/},%
+    firstnumber = 1,%
+    numbers = left%
+}
 
 \begin{document}
     \newcommand{\instr}[3]{\subparagraph{\makebox[6em][l]{\texttt{#1}}} (\texttt{#2})\par#3\par}
@@ -86,21 +93,21 @@
                     \subitem 1 - vartotojo atmintis;
                     \subitem 2 - supervizorinė atmintis;
                     \subitem 3 - išorinė atmintis;
-                    \subitem 4 - standartinė išvestis.
-                    \subitem 5 - LED lemputė;                    
+                    \subitem 4 - standartinė išvestis;
+                    \subitem 5 - LED lemputė.
             \end{itemize}
             Kanalų įrenginys yra paslėptas nuo virtualios mašinos. Virtualios mašinos gali dirbti tik su virtualia atmintimi, virtualia klaviatūra ir monitoriumi. Darbui su virtualiais įvedimo ir išvedimo srautais yra naudojamos instrukcijos \texttt{IN} ir \texttt{OUT} (bei variantai). Šios instrukcijos atitinkamai nustato kanalų įrenginio registrų reikšmes ir blokuoja tolesnį vykdymą tuo atveju, kai kanalas yra užimtas.
-            \subsubsection{LED lemputė}
-            	LED lemputė - įrenginys, turintis vieną bloką atminties, kuriame saugomos trys reikšmės. Tos reikšmės atitinka spalvos, kurią dabar atkuria lemputė, RGB kodą. Jeigu savo programoje norėtume išjungti lemputę, turėtume nustatyti visas tris RGB reikšmes į 0. Darbui su lempute naudojama komanda
-            	\texttt{LED}.
+            \subsubsection{Šviesos diodas}
+                Kanalų įrenginys geba valdyti ir kitus išorinius įrenginius, pavyzdžiui, šviesos diodus, kurie gali būti naudojami diagnostikai. Būsenai skiriamas vienas atminties blokas, kuriame saugomos RGB spalvinės reikšmės. Įrenginys valdomas \texttt{LED} instrukcija.
     \pagebreak
     \section{Virtuali mašina}
         \subsection{Procesorius}
             \subsubsection{Registrai}
                 \paragraph{\makebox[4em][l]{PC}} Programų skaitiklis.
                 \paragraph{\makebox[4em][l]{SP}} Steko nuoroda.
-                \paragraph{\makebox[3em][l]{DS}} Duomenų segmento nuoroda. 
-                	\par 1 baito dydžio registras, saugantis virtualios mašinos atminties bloko numerį, kuriame prasideda duomenų segmentas.
+                \paragraph{\makebox[4em][l]{DS}} Duomenų segmento nuoroda.
+                    \par
+                    1 baito dydžio registras, saugantis virtualios mašinos atminties bloko numerį, kuriame prasideda duomenų segmentas.
                 \paragraph{\makebox[4em][l]{FLAGS}} Paskutinės aritmetinės ar loginės operacijos požymiai. \mbox{} \\
                     \par
                     \begin{bytefield}[bitwidth=1.5em,endianness=big]{16}
@@ -112,69 +119,73 @@
             \subsubsection{Instrukcijų rinkinys}
                 Kur nurodyta, steko argumentai išvardinti tvarka, kuria yra skaitomi iš steko.
                 \paragraph{Bendros paskirties operacijos}
-                    \instr{NOP}{00 00}{Neatlieka jokio veiksmo.}
-                    \instr{HALT}{00 01}{Sustabdo procesoriaus darbą (nutraukia programos vykdymą).}
+                    \instr{NOP}{00h}{Neatlieka jokio veiksmo.}
+                    \instr{HALT}{01h}{Sustabdo procesoriaus darbą (nutraukia programos vykdymą).}
                 \paragraph{Steko operacijos}
-                    \instr{DUP}{01 00}{Padaro steko viršūnės kopiją.}
-                    \instr{POP}{01 01}{Nukopijuoja steko žodį į virtualios mašinos atmintį.}
+                    \instr{DUP}{10h}{Padaro steko viršūnės kopiją.}
+                    \instr{POP}{11h}{Perkelia steko rodyklę po steko viršūne.}
+                    \instr{POPM}{12h}{Nukopijuoja steko žodį į virtualios mašinos atmintį.}
                     \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, kopijuojamas žodis.
-                    \instr{PUSH imm16}{01 02}{Nukopijuoja operando žodį į steką.}
-                    \instr{PUSHM}{01 03}{Į steką iš atminties nukopijuoja žodį.}
+                    \instr{PUSH imm16}{13h}{Nukopijuoja operando žodį į steką.}
+                    \instr{PUSHM}{14h}{Į steką iš atminties nukopijuoja žodį.}
                     \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{PUSHF}{01 04}{Nukopijuoja FLAGS registro reikšmę į steką.}
-                    \instr{PUSHDS}{01 05}{Nukopijuoja DS registro reikšmę į steką.} Naudojama, kai reikia pasiekti lokalius kintamuosius, saugomus virtualios mašinos duomenų segmente.
+                    \instr{PUSHF}{15h}{Nukopijuoja FLAGS registro reikšmę į steką.}
+                    \instr{PUSHDS}{16h}{Nukopijuoja DS registro reikšmę į steką.} Naudojama, kai reikia pasiekti lokalius kintamuosius, saugomus virtualios mašinos duomenų segmente.
                 \paragraph{Aritmetinės operacijos}
-                    \instr{ADD}{02 00}{Sudeda du steke esančius žodžius ir patalpina rezultatą steko viršūnėje.}
-                    \instr{CMP}{02 01}{Palygina du steke esančius žodžius.}
-                    \instr{DEC}{02 02}{Steko viršūnėje esančio žodžio reikšmę sumažina vienetu.}
-                    \instr{DIV}{02 03}{Padalina pirmąjį steke esantį žodį iš antrojo ir patalpina rezultatą steko viršūnėje.}
-                    \instr{INC}{02 04}{Steko viršūnėje esančio žodžio reikšmę padidina vienetu.}
-                    \instr{MUL}{02 05}{Sudaugina du steke esančius žodžius ir patalpina rezultatą steko viršūnėje.}
-                    \instr{SUB}{02 06}{Atima antrąjį steke esantį žodį iš pirmojo ir patalpina rezultatą steko viršūnėje.}
+                    \instr{ADD}{20h}{Sudeda du steke esančius žodžius ir patalpina rezultatą steko viršūnėje.}
+                    \instr{CMP}{21h}{Palygina du steke esančius žodžius.}
+                    \instr{DEC}{22h}{Steko viršūnėje esančio žodžio reikšmę sumažina vienetu.}
+                    \instr{DIV}{23h}{Padalina pirmąjį steke esantį žodį iš antrojo ir patalpina rezultatą steko viršūnėje.}
+                    \instr{INC}{24h}{Steko viršūnėje esančio žodžio reikšmę padidina vienetu.}
+                    \instr{MUL}{25h}{Sudaugina du steke esančius žodžius ir patalpina rezultatą steko viršūnėje.}
+                    \instr{SUB}{26h}{Atima antrąjį steke esantį žodį iš pirmojo ir patalpina rezultatą steko viršūnėje.}
                 \paragraph{Loginės operacijos}
-                    \instr{AND}{03 00}{Atlieka dviejų steke esančių žodžių konjunkciją ir patalpina rezultatą steko viršūnėje.}
-                    \instr{NOT}{03 01}{Atlieka steko viršūnėje esančio žodžio inversiją.}
-                    \instr{OR}{03 02}{Atlieka dviejų steke esančių žodžių disjunkciją ir patalpina rezultatą steko viršūnėje.}
-                    \instr{XOR}{03 03}{Atlieka dviejų steke esančių žodžių griežtą disjunkciją ir patalpina rezultatą steko viršūnėje.}
+                    \instr{AND}{30h}{Atlieka dviejų steke esančių žodžių konjunkciją ir patalpina rezultatą steko viršūnėje.}
+                    \instr{NOT}{31h}{Atlieka steko viršūnėje esančio žodžio inversiją.}
+                    \instr{OR}{32h}{Atlieka dviejų steke esančių žodžių disjunkciją ir patalpina rezultatą steko viršūnėje.}
+                    \instr{XOR}{33h}{Atlieka dviejų steke esančių žodžių griežtą disjunkciją ir patalpina rezultatą steko viršūnėje.}
                 \paragraph{Valdymo operacijos}
-                    \instr{JMP}{04 00}{Besąlygiškai atlieka šuolį į adresą.}
-                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{JC}{04 01}{Atlieka šuolį į adresą, kai \texttt{CF = 1}.}
-                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{JE}{04 02}{Atlieka šuolį į adresą, kai \texttt{ZF = 1}.}
-                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{JG}{04 03}{Atlieka šuolį į adresą, kai \texttt{ZF = 0} ir \texttt{CF = 1}.}
-                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{JGE}{04 04}{Atlieka šuolį į adresą, kai \texttt{ZF = 0} ir \texttt{CF = 1} arba \texttt{ZF = 1}.}
-                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{JL}{04 05}{Atlieka šuolį į adresą, kai \texttt{ZF = 0} ir \texttt{CF = 0}.}
-                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{JLE}{04 06}{Atlieka šuolį į adresą, kai \texttt{ZF = 0} ir \texttt{CF = 0} arba \texttt{ZF = 1}.}
-                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{JNC}{04 07}{Atlieka šuolį į adresą, kai \texttt{CF = 0}.}
-                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{JNE}{04 08}{Atlieka šuolį į adresą, kai \texttt{ZF = 0}.}
-                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{JNP}{04 09}{Atlieka šuolį į adresą, kai \texttt{PF = 0}.}
-                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{JP}{04 0A}{Atlieka šuolį į adresą, kai \texttt{PF = 1}.}
-                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{LOOP}{04 0B}{Atlieka šuolį į adresą, jei skaitiklio reikšmė didesnė už nulį.}
-                    \emph{Steko argumentai:} žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, skaitiklis.
+                    \instr{JMP}{40h}{Besąlygiškai atlieka šuolį į adresą.}
+                    \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas.
+                    \instr{JC}{41h}{Atlieka šuolį į adresą, kai \texttt{CF = 1}.}
+                    \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas.
+                    \instr{JE}{42h}{Atlieka šuolį į adresą, kai \texttt{ZF = 1}.}
+                    \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas.
+                    \instr{JG}{43h}{Atlieka šuolį į adresą, kai \texttt{ZF = 0} ir \texttt{CF = 1}.}
+                    \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas.
+                    \instr{JGE}{44h}{Atlieka šuolį į adresą, kai \texttt{ZF = 0} ir \texttt{CF = 1} arba \texttt{ZF = 1}.}
+                    \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas.
+                    \instr{JL}{45h}{Atlieka šuolį į adresą, kai \texttt{ZF = 0} ir \texttt{CF = 0}.}
+                    \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas.
+                    \instr{JLE}{46h}{Atlieka šuolį į adresą, kai \texttt{ZF = 0} ir \texttt{CF = 0} arba \texttt{ZF = 1}.}
+                    \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas.
+                    \instr{JNC}{47h}{Atlieka šuolį į adresą, kai \texttt{CF = 0}.}
+                    \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas.
+                    \instr{JNE}{48h}{Atlieka šuolį į adresą, kai \texttt{ZF = 0}.}
+                    \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas.
+                    \instr{JNP}{49h}{Atlieka šuolį į adresą, kai \texttt{PF = 0}.}
+                    \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas.
+                    \instr{JP}{4Ah}{Atlieka šuolį į adresą, kai \texttt{PF = 1}.}
+                    \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas.
+                    \instr{LOOP}{4Bh}{Atlieka šuolį į adresą, jei skaitiklio reikšmė didesnė už nulį.}
+                    \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas, skaitiklis.
                 \paragraph{Įvesties/išvesties operacijos}
-                    \instr{IN}{05 00}{Iš įvesties srauto į virtualios mašinos atmintį nukopijuoja ASCII koduote užkoduotus duomenis.}
+                    \instr{IN}{50h}{Iš įvesties srauto į virtualios mašinos atmintį nukopijuoja ASCII koduote užkoduotus duomenis.}
                     \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{OUT}{05 01}{Į išvesties srautą nusiunčia ASCII koduote užkoduotus duomenis.}
+                    \instr{INI}{51h}{Iš įvesties srauto į virtualios mašinos atmintį nukopijuoja ASCII koduote užkoduotų duomenų skaitines reikšmes.}
                     \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
-                    \instr{OUTI}{05 02}{Į išvesties srautą skaitiniu pavidalu nusiunčia žodį iš steko viršūnės.}
+                    \instr{OUT}{52h}{Į išvesties srautą nusiunčia ASCII koduote užkoduotus duomenis.}
+                    \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \instr{OUTI}{53h}{Į išvesties srautą skaitiniu pavidalu nusiunčia žodį iš steko viršūnės.}
+                    \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
                 \paragraph{Darbo su bendra atminties sritimi operacijos}
-                    \instr{SHREAD}{06 00}{Iš bendros atminties srities nukopijuoja duomenis į virtualios mašinos atmintį.}
+                    \instr{SHREAD}{60h}{Iš bendros atminties srities nukopijuoja duomenis į virtualios mašinos atmintį.}
                     \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, žodžio numeris bendroje atminties srityje, bloko numeris bendroje atminties srityje.
-                    \instr{SHWRITE}{06 01}{Iš virtualios mašinos nukopijuoja duomenis į bendrą atminties sritį.}
+                    \instr{SHWRITE}{61h}{Iš virtualios mašinos nukopijuoja duomenis į bendrą atminties sritį.}
                     \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, žodžio numeris bendroje atminties srityje, bloko numeris bendroje atminties srityje.
-                \paragraph{Papildomo įrenginio valdymas}
-					\instr{LED}{07 00}{Nustato lemputės spalvą}
-					\emph{Steko argumentai:}{Red Green ir Blue spalvų vertės. (0,0,0) jei norime išjungti lemputę}
+                \paragraph{Aparatūrinės įrangos valdymo operacijos}
+                    \instr{LED}{70h}{Nustato lemputės spalvą}
+                    \emph{Steko argumentai:} RGB vertės. $(0, 0, 0)$ lemputę išjungia.
         \subsection{Atmintis}
             Virtualios mašinos atmintį sudaro šešiolika vartotojo atminties blokų, kurie yra suskirstyti į segmentus pačios programos. Naudojami segmentai:
             \begin{itemize}
@@ -184,63 +195,92 @@
             \end{itemize}
             \subsubsection{Puslapiavimo mechanizmas}
                 Puslapiavimo mechanizmas įgyvendinamas remiantis dviem dalykais: realios mašinos procesoriaus registru \texttt{PTR} bei virtualių mašinų puslapių lentelėmis.
-		\subsection{Užduoties pavyzdys}
-			\begin{itemize}
-				\item[] \$PROGRAM	
-				\item[] COUNTDOWN	\emph{//Užduoties pavadinimas}
-				\item[] \$DATA
-				\item[0] VIENAS
-				\item[3] DU
-				\item[4] TRYS
-				\item[] \$CODE
-				
-				\item [0] PUSH 0003	\emph{//Į steką įdedame skaitiklio reikšmę 3}
-				\item [2] DUP
-				\item [3] PUSH 0001
-				\item [5] CMP
-				\item [6] PUSH 0001
-				\item [8] PUSH 0001
-				\item [10] JNE
-				\item [11] PUSHDS
-				\item [12] PUSH 0000
-				\item [14] PUSH 0003
-				\item [16] OUT
-				\item [] PUSH zodzio numeris
-				\item [] PUSH bloko numeris
-				\item [] JMP	\emph{//Valdymo perdavimas už paskutinio checko}
-				
-				\item [17] DUP
-				\item [18] PUSH 0002
-				\item [20] CMP		
-				\item [21] PUSH 0000
-				\item [23] PUSH 0002
-				\item [25] JNE 		
-				\item [26] PUSHDS
-				\item [27] PUSH 0003
-				\item [29] PUSH 0001
-				\item [31] OUT
-				\item [] PUSH zodzio numeris
-				\item [] PUSH bloko numeris
-				\item [] JMP	\emph{//Valdymo perdavimas už paskutinio checko}
-				
-				\item [32] DUP
-				\item [33] PUSH 0003
-				\item [35] CMP		
-				\item [36] PUSH zodzio numeris
-				\item [38] PUSH bloko numeris								
-				\item [40] JNE 		
-				\item [41] PUSHDS
-				\item [42] PUSH 0004
-				\item [44] PUSH 0002
-				\item [46] OUT
-				
-				\item [47] DUP
-				\item [48] DEC
-				\item [49] PUSH 0000
-				\item [51] PUSH 0000
-				\item [53] LOOP
-				\item [54] HALT				
-				\item[] \$END
-			\end{itemize}
-		
-\end{document}
+        \subsection{Užduoties pavyzdys}
+            Pseudokodas:
+            \begin{lstlisting}[language = c]
+for (i = 1; i < 3; i++) {
+    if (i == 1)
+        print /*“VIENAS”*/;
+
+    if (i == 2)
+        print /*“DU”*/;
+
+    if (i == 3)
+        print /*“TRYS”*/;
+}
+            \end{lstlisting}
+            Užduoties tekstas:
+            \lstset{belowskip = 0.0mm, numbers = none}
+            \begin{lstlisting}
+/*\$PROGRAM*/
+PROGRAM NAME
+/*\$DATA*/
+VIENAS
+DU
+TRYS
+/*\$CODE*/
+            \end{lstlisting}
+            \lstset{aboveskip = 0.0mm, belowskip = 0.0mm, numbers = left}
+            \begin{lstlisting}[firstnumber = 0]
+PUSH 00 01h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 3]
+DUP
+PUSH 00 01h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 7]
+CMP
+PUSH 00 07h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 11]
+JNE
+PUSHDS
+PUSH 00 00h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 16]
+PUSH 00 03h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 19]
+OUT
+DUP
+PUSH 00 02h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 24]
+CMP
+PUSH 00 07h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 28]
+JNE
+PUSHDS
+PUSH 00 03h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 33]
+PUSH 00 01h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 36]
+OUT
+DUP
+PUSH 00 03h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 41]
+CMP
+PUSH FF E0h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 45]
+JNE
+PUSHDS
+PUSH 00 04h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 50]
+PUSH 00 02h
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 53]
+OUT
+POP
+HALT
+        \end{lstlisting}
+        \lstset{belowskip = 0.0mm, numbers = none}
+        \begin{lstlisting}
+/*\$END*/
+        \end{lstlisting}
+    \end{document}
