@@ -4,6 +4,7 @@
 \usepackage{bytefield}
 \usepackage{fontspec}
 \usepackage{gitinfo2}
+\usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{microtype}
@@ -35,6 +36,8 @@
     numbers = left%
 }
 
+\graphicspath{{images/}}
+
 \begin{document}
     \newcommand{\instr}[3]{\subparagraph{\makebox[6em][l]{\texttt{#1}}} (\texttt{#2})\par#3\par}
     \begin{titlepage}
@@ -60,6 +63,7 @@
         \end{center}
     \end{titlepage}
     \section{Reali mašina}
+        \includegraphics[width=\textwidth]{RM_model}
         \subsection{Procesorius}
             \subsubsection{Registrai}
                 \paragraph{\makebox[3em][l]{PC}} Programų skaitiklis.
@@ -123,6 +127,7 @@
                 Kanalų įrenginys geba valdyti ir kitus išorinius įrenginius, pavyzdžiui, šviesos diodus, kurie gali būti naudojami diagnostikai. Būsenai skiriamas vienas atminties blokas, kuriame saugomos RGB spalvinės reikšmės. Įrenginys valdomas \texttt{LED} instrukcija.
     \pagebreak
     \section{Virtuali mašina}
+        \includegraphics[width=\textwidth]{VM_model}
         \subsection{Procesorius}
             \subsubsection{Registrai}
                 \paragraph{\makebox[4em][l]{PC}} Programų skaitiklis.
