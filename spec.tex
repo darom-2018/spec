@@ -1,5 +1,6 @@
 \documentclass{scrartcl}
 
+\usepackage{amsmath}
 \usepackage{array}
 \usepackage{bytefield}
 \usepackage{fontspec}
@@ -69,11 +70,25 @@
     \section{Reali mašina}
         \includegraphics[width=\textwidth]{RM_model}
         \subsection{Procesorius}
+            Procesorius - vienas pagrindinių kompiuterio komponentų, kurio paskirtis skaityti komandas iš atminties ir jas interpretuoti. Procesorius gali dirbti dviem režimais - supervizoriaus ir vartotojo.
+            \par
+            Supervizoriaus (privilegijuotu) režimu komandos yra skaitomos iš supervizorinės atminties ir yra betarpiškai apdorojamos aukšto lygio kalbos procesoriaus. Šiame režime gali būti vykdomos bet kokios architektūros instrukcijos, inicijuotos įvesties ir išvesties operacijos, pasiekiama bet kokia vieta atmintyje, modifikuojamos visų registrų reikšmės.
+            \par
+            Vartotojo režimu aukšto lygio kalbos procesorius vykdo tam tikrą programą. Šiame režime aukšto lygio kalbos procesorius imituoja virtualios mašinos procesorių. Šiame režime yra prieinama tik prie vartotojo atmintyje esančių programų per puslapiavimo mechanizmą.
+            \par
+            Šie du režimai leidžia operacinei sistemai turėti daugiau privilegijų nei vykdomosioms programoms. Šių režimų pagrindinė paskirtis - saugumas ir stabilumas. Pavyzdžiui, tik operacinė sistema gali puslapius priskirti programoms. To kitos programos, vykdomos operacinės sistemos aplinkoje, padaryti negalėtų.
             \subsubsection{Registrai}
+                \paragraph{\makebox[3em][l]{MODE}} Procesoriaus režimo indikatorius. \mbox{} \\
+                    Galimos reikšmės:
+                    \begin{itemize}
+                        \item $\texttt{MODE} = 0$ - procesorius dirba vartotojo režimu;
+                        \item $\texttt{MODE} = 1$ - procesorius dirba supervizoriniu režimu.
+                    \end{itemize}
                 \paragraph{\makebox[3em][l]{PC}} Programų skaitiklis.
                 \paragraph{\makebox[3em][l]{SP}} Steko nuoroda.
                 \paragraph{\makebox[3em][l]{FLAGS}} Paskutinės aritmetinės ar loginės operacijos požymiai.
-                \paragraph{\makebox[3em][l]{PTR}} Puslapių lentelės registras. \mbox {} \\
+                \paragraph{\makebox[3em][l]{PTR}} Puslapių lentelės registras. \mbox{}
+                    \vspace{1em}
                     \par
                     \begin{bytefield}[endianness=big]{32}
                         \bitheader{0-31} \\
@@ -91,9 +106,44 @@
                     \par
                     $a_{3}$ - poslinkis bloke.
                 \paragraph{\makebox[3em][l]{SHM}} Bendros atminties srities nuoroda.
-                \paragraph{\makebox[3em][l]{PI}} Programinių pertraukimų registras.
-                \paragraph{\makebox[3em][l]{SI}} Supervizorinių pertraukimų registras.
+                \paragraph{\makebox[3em][l]{PI}} Programinių pertraukimų registras. \mbox{} \\
+                    Galimos reikšmės:
+                    \begin{itemize}
+                        \item $\texttt{PI} = 0$ - petraukimas neįvyko;
+                        \item $\texttt{PI} = 1$ - neteisingas instrukcijos kodas;
+                        \item $\texttt{PI} = 2$ - neteisingas operandas;
+                        \item $\texttt{PI} = 3$ - puslapio klaida;
+                        \item $\texttt{PI} = 4$ - steko perpildymas.
+                    \end{itemize}
+                \paragraph{\makebox[3em][l]{SI}} Supervizorinių pertraukimų registras. \mbox{} \\
+                    Galimos reikšmės:
+                    \begin{itemize}
+                        \item $\texttt{SI} = 0$ - petraukimas neįvyko;
+                        \item $\texttt{SI} = 1$ - vykdoma \texttt{HALT} instrukcija;
+                        \item $\texttt{SI} = 2$ - vykdoma \texttt{IN} instrukcija;
+                        \item $\texttt{SI} = 3$ - vykdoma \texttt{INI} instrukcija;
+                        \item $\texttt{SI} = 4$ - vykdoma \texttt{OUT} instrukcija;
+                        \item $\texttt{SI} = 5$ - vykdoma \texttt{OUTI} instrukcija;
+                        \item $\texttt{SI} = 6$ - vykdoma \texttt{SHREAD} instrukcija;
+                        \item $\texttt{SI} = 7$ - vykdoma \texttt{SHWRITE} instrukcija;
+                        \item $\texttt{SI} = 8$ - vykdoma \texttt{LED} instrukcija.
+                    \end{itemize}
                 \paragraph{\makebox[3em][l]{TI}} Taimerio registras.
+            \subsubsection{Pertraukimai}
+                Pertraukimai - signalai, išsiųsti techninės ar programinės įrangos ir skirti procesoriui. Jų paskirtis - pranešti apie įvykusius įvykius, į kuriuos reikia nedelsiant sureaguoti. Sistemai aptikus pertraukimą (tam tikrą pertraukimo registro reikšmę) yra nutraukiamas vartotojo programos vykdymas, išsaugant virtualios mašinos registrų reikšmes ir perjungiant procesorių į supervizorinį režimą, kuriame nustatomas pertraukimo tipas ir yra iškviečiama atitinkama pertraukimą apdorojanti programa. Vėliau procesorius grįžta į vartotojo režimą, atstatomi visi registrai ir tęsiamas virtualios mašinos darbas.
+                \par
+                Modelyje realizuoti trijų tipų pertraukimai:
+                    \begin{itemize}
+                        \item Programiniai - sukeliami programinių klaidų virtualioje mašinoje;
+                        \item Supervizoriniai - sukeliami vykdant privilegijuotas instrukcijas virtualioje mašinoje;
+                        \item Taimerio - sukeliami taimerio registrui pasiekus nulinę reikšmę.
+                    \end{itemize}
+            \subsubsection{Taimerio mechanizmas}
+                Taimeris - mechanizmas, skirtas suderinti lygiagretų programų veikimą. Mechanizmo veikimo principas - užduoties vykdymas tam tikrą laiko tarpą (laiko momentų sumą). Čia laikysime, kad vienas laiko momentas - vienas užduoties taktas.
+                \par
+                Laikysime, kad įvesties/išvesties operacijos bus atliekamos per tris taktus, o visos kitos - per vieną.
+                \par
+                Tarkim, pradedame vykdyti virtualios mašinos užduotį ir $\texttt{T1} = 15$. Įvykdžius vieną instrukciją, registro T1 reikšmė yra mažinama, o pasiekus nulį, iššaukiamas pertraukimas.
         \subsection{Atmintis}
             Modelyje naudojami tokie dydžiai:
             \begin{itemize}
@@ -139,7 +189,8 @@
                 \paragraph{\makebox[4em][l]{DS}} Duomenų segmento nuoroda.
                     \par
                     1 baito dydžio registras, saugantis virtualios mašinos atminties bloko numerį, kuriame prasideda duomenų segmentas.
-                \paragraph{\makebox[4em][l]{FLAGS}} Paskutinės aritmetinės ar loginės operacijos požymiai. \mbox{} \\
+                \paragraph{\makebox[4em][l]{FLAGS}} Paskutinės aritmetinės ar loginės operacijos požymiai. \mbox{}
+                    \vspace{1em}
                     \par
                     \begin{bytefield}[bitwidth=1.5em,endianness=big]{16}
                         \bitheader{0-15} \\
@@ -226,10 +277,25 @@
             \end{itemize}
             \subsubsection{Puslapiavimo mechanizmas}
                 Puslapiavimo mechanizmas įgyvendinamas remiantis dviem dalykais: realios mašinos procesoriaus registru \texttt{PTR} bei virtualių mašinų puslapių lentelėmis.
+                \par
+                Iš anksto sunku nustatyti optimalius programų sekcijų dydžius, tad virtualios mašinos turi galimybę pačios tai nuspręsti. Tam naudojamos \texttt{PTR} registro reikšmės $_0$ ir $a_1$:
+                    \begin{itemize}
+                        \item $a_{0} \in [1, 7]$ - kodo segmento dydis blokais;
+                        \item $a_{1}$ - suminis virtualiai mašinai reikalingų atminties blokų skaičius.
+                    \end{itemize}
+                \par
+                Skaičius $16a_{2} + a_{3}$ žymi dabartinį \texttt{PTR} registrą atitinkančios puslapių lentelės pradžios absoliutų adresą. Būtina atsižvelgti į tai, kad realios mašinos modelyje atminčiai išskiriama tik 70 blokų, bet $a_{2} \in [0, 255]$, tad reikės užtikrinti absoliutaus adreso neišėjimą iš rėžių.
+                Turint virtualų adresą $(x_{1}, x_{2})$, absoliutaus adreso $y$ skaičiavimas atrodytų taip:
+                \begin{align*}
+                    y = 16 \cdot \left[\left(16a_{2} + a_{3}\right) + x_{1}\right] + x_{2}
+                \end{align*}
+                Čia, $16a_{2} + a_{3}$ - pirmo puslapių lentelės įrašo absoliutus adresas, $\left(16a_{2} + a_{3}\right) + x_{1}$ - puslapių lentelės įrašo, su numeriu $x_{1}$, absoliutus adresas.
+            \subsubsection{Adresų validacija}
+                Kadangi puslapių lentelės nėra fiksuoto dydžio, kiekvienos atminties operacijos metu reikia užtikrinti, kad absoliutus adresas neišeitų už ribų, t.y. $x_{1} \leq a_{1}$.
         \subsection{Užduoties pavyzdys}
             Pseudokodas:
             \begin{lstlisting}[language = c]
-for (i = 1; i < 3; i++) {
+for (i = 3; i > 1; i--) {
     if (i == 1)
         print /*“VIENAS”*/;
 
@@ -253,7 +319,7 @@ TRYS
             \end{lstlisting}
             \lstset{aboveskip = 0.0mm, belowskip = 0.0mm, numbers = left}
             \begin{lstlisting}[firstnumber = 0]
-PUSH 00 01h
+PUSH 00 03h
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 3]
 DUP
@@ -261,7 +327,7 @@ PUSH 00 01h
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 7]
 CMP
-PUSH 00 07h
+PUSH 00 0Ah
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 11]
 JNE
@@ -278,7 +344,7 @@ PUSH 00 02h
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 24]
 CMP
-PUSH 00 07h
+PUSH 00 0Ah
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 28]
 JNE
@@ -295,7 +361,7 @@ PUSH 00 03h
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 41]
 CMP
-PUSH FF E0h
+PUSH 00 0Ah
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 45]
 JNE
@@ -307,6 +373,10 @@ PUSH 00 02h
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 53]
 OUT
+PUSH FF CAh
+            \end{lstlisting}
+            \begin{lstlisting}[firstnumber = 57]
+LOOP
 POP
 HALT
         \end{lstlisting}
