@@ -155,7 +155,7 @@
             \subsubsection{Vartotojo atmintis}
                 Vartotojo atmintis skirta virtualių mašinų atmintims, jos dydis - 64 blokai (užtektinai keturioms maksimaliai didelėms virtualioms mašinoms).
             \subsubsection{Bendra atminties sritis}
-                Virtualių mašinų reikmėms išskiriama bendra atminties sritis, kurioje mašinos gali dalintis duomenimis. Srities dydis - du blokai.
+                Virtualių mašinų reikmėms išskiriama bendra atminties sritis, kurioje mašinos gali dalintis duomenimis. Srities dydis - du blokai. Sritis bloko lygmeny apsaugota semaforu.
             \subsubsection{Išorinė atmintis}
                 Išorinėje atmintyje saugomos programos. Realizuojama failu, kurio dydis dirbtinai neribojamas.
         \subsection{Kanalų įrenginys}
@@ -215,17 +215,28 @@
                     \instr{PUSHDS}{16h}{Nukopijuoja DS registro reikšmę į steką.} Naudojama, kai reikia pasiekti lokalius kintamuosius, saugomus virtualios mašinos duomenų segmente.
                 \paragraph{Aritmetinės operacijos}
                     \instr{ADD}{20h}{Sudeda du steke esančius žodžius ir patalpina rezultatą steko viršūnėje.}
+                    \emph{Paveikti požymiai:} $\texttt{CF} = 1$ ir $\texttt{ZF} = 0$ jei įvyksta perpildymas, $\texttt{PF} = 1$ jei rezultatas lyginis ir $\texttt{PF} = 0$ priešingu atveju.
                     \instr{CMP}{21h}{Palygina du steke esančius žodžius.}
+                    Sinonimas \texttt{SUB} instrukcijai.
                     \instr{DEC}{22h}{Steko viršūnėje esančio žodžio reikšmę sumažina vienetu.}
+                    \emph{Paveikti požymiai:} $\texttt{CF} = 1$ ir $\texttt{ZF} = 0$ jei rezultato ženklas pakinta, $\texttt{PF} = 1$ jei rezultatas lyginis ir $\texttt{PF} = 0$ priešingu atveju.
                     \instr{DIV}{23h}{Padalina pirmąjį steke esantį žodį iš antrojo ir patalpina rezultatą steko viršūnėje.}
+                    \emph{Paveikti požymiai:} $\texttt{ZF} = 1$ jei rezultato reikšmė lygi nuliui, $\texttt{PF} = 1$ jei rezultatas lyginis ir $\texttt{PF} = 0$ priešingu atveju.
                     \instr{INC}{24h}{Steko viršūnėje esančio žodžio reikšmę padidina vienetu.}
+                    \emph{Paveikti požymiai:} $\texttt{CF} = 1$ ir $\texttt{ZF} = 0$ jei įvyksta perpildymas, $\texttt{PF} = 1$ jei rezultatas lyginis ir $\texttt{PF} = 0$ priešingu atveju.
                     \instr{MUL}{25h}{Sudaugina du steke esančius žodžius ir patalpina rezultatą steko viršūnėje.}
+                    \emph{Paveikti požymiai:} $\texttt{CF} = 1$ ir $\texttt{ZF} = 0$ jei įvyksta perpildymas, $\texttt{PF} = 1$ jei rezultatas lyginis ir $\texttt{PF} = 0$ priešingu atveju.
                     \instr{SUB}{26h}{Atima antrąjį steke esantį žodį iš pirmojo ir patalpina rezultatą steko viršūnėje.}
+                    \emph{Paveikti požymiai:} $\texttt{CF} = 1$ ir $\texttt{ZF} = 0$ jei rezultato ženklas pakinta, $\texttt{PF} = 1$ jei rezultatas lyginis ($\texttt{PF} = 0$ priešingu atveju).
                 \paragraph{Loginės operacijos}
                     \instr{AND}{30h}{Atlieka dviejų steke esančių žodžių konjunkciją ir patalpina rezultatą steko viršūnėje.}
+                    \emph{Paveikti požymiai:} $\texttt{ZF} = 1$ jei rezultato reikšmė lygi nuliui ($\texttt{ZF} = 0$ priešingu atveju) ir $\texttt{PF} = 1$ jei rezultatas lyginis ($\texttt{PF} = 0$ priešingu atveju).
                     \instr{NOT}{31h}{Atlieka steko viršūnėje esančio žodžio inversiją.}
+                    \emph{Paveikti požymiai:} $\texttt{ZF} = 1$ jei rezultato reikšmė lygi nuliui ($\texttt{ZF} = 0$ priešingu atveju) ir $\texttt{PF} = 1$ jei rezultatas lyginis ($\texttt{PF} = 0$ priešingu atveju).
                     \instr{OR}{32h}{Atlieka dviejų steke esančių žodžių disjunkciją ir patalpina rezultatą steko viršūnėje.}
+                    \emph{Paveikti požymiai:} $\texttt{ZF} = 1$ jei rezultato reikšmė lygi nuliui ($\texttt{ZF} = 0$ priešingu atveju) ir $\texttt{PF} = 1$ jei rezultatas lyginis ($\texttt{PF} = 0$ priešingu atveju).
                     \instr{XOR}{33h}{Atlieka dviejų steke esančių žodžių griežtą disjunkciją ir patalpina rezultatą steko viršūnėje.}
+                    \emph{Paveikti požymiai:} $\texttt{ZF} = 1$ jei rezultato reikšmė lygi nuliui ($\texttt{ZF} = 0$ priešingu atveju) ir $\texttt{PF} = 1$ jei rezultatas lyginis ($\texttt{PF} = 0$ priešingu atveju).
                 \paragraph{Valdymo operacijos}
                     \instr{JMP}{40h}{Besąlygiškai atlieka šuolį į adresą.}
                     \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas.
@@ -253,18 +264,20 @@
                     \emph{Steko argumentai:} \texttt{PC}-reliatyvus adresas, skaitiklis.
                 \paragraph{Įvesties/išvesties operacijos}
                     \instr{IN}{50h}{Iš įvesties srauto į virtualios mašinos atmintį nukopijuoja ASCII koduote užkoduotus duomenis.}
-                    \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \emph{Steko argumentai:} simbolių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
                     \instr{INI}{51h}{Iš įvesties srauto į virtualios mašinos atmintį nukopijuoja ASCII koduote užkoduotų duomenų skaitines reikšmes.}
-                    \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \emph{Steko argumentai:} simbolių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
                     \instr{OUT}{52h}{Į išvesties srautą nusiunčia ASCII koduote užkoduotus duomenis.}
-                    \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \emph{Steko argumentai:} simbolių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
                     \instr{OUTI}{53h}{Į išvesties srautą skaitiniu pavidalu nusiunčia žodį iš steko viršūnės.}
-                    \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
+                    \emph{Steko argumentai:} simbolių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje.
                 \paragraph{Darbo su bendra atminties sritimi operacijos}
                     \instr{SHREAD}{60h}{Iš bendros atminties srities nukopijuoja duomenis į virtualios mašinos atmintį.}
-                    \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, žodžio numeris bendroje atminties srityje, bloko numeris bendroje atminties srityje.
+                    \emph{Steko argumentai:} baitų skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, žodžio numeris bendroje atminties srityje, bloko numeris bendroje atminties srityje.
                     \instr{SHWRITE}{61h}{Iš virtualios mašinos nukopijuoja duomenis į bendrą atminties sritį.}
-                    \emph{Steko argumentai:} žodžių skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, žodžio numeris bendroje atminties srityje, bloko numeris bendroje atminties srityje.
+                    \emph{Steko argumentai:} baitų skaičius, žodžio numeris virtualios mašinos atmintyje, bloko numeris virtualios mašinos atmintyje, žodžio numeris bendroje atminties srityje, bloko numeris bendroje atminties srityje.
+                    \instr{SHLOCK}{62h}{Užrakinamas nurodytas bendros atminties srities blokas.}
+                    \emph{Steko argumentai:} bloko numeris bendroje atminties srityje.
                 \paragraph{Aparatūrinės įrangos valdymo operacijos}
                     \instr{LED}{70h}{Nustato lemputės spalvą}
                     \emph{Steko argumentai:} RGB vertės. $(0, 0, 0)$ lemputę išjungia.
@@ -292,7 +305,9 @@
                 Čia, $16a_{2} + a_{3}$ - pirmo puslapių lentelės įrašo absoliutus adresas, $\left(16a_{2} + a_{3}\right) + x_{1}$ - puslapių lentelės įrašo, su numeriu $x_{1}$, absoliutus adresas.
             \subsubsection{Adresų validacija}
                 Kadangi puslapių lentelės nėra fiksuoto dydžio, kiekvienos atminties operacijos metu reikia užtikrinti, kad absoliutus adresas neišeitų už ribų, t.y. $x_{1} \leq a_{1}$.
-        \subsection{Užduoties pavyzdys}
+        \subsection{Užduotys}
+            Virtualios mašinos užduotys - vardiniai failai su kodo ir duomenų skiltimis. Kodas pateikiamas parašytas naudojant instrukcijų mnemonikas ir yra apdorojamas asemblerio prieš vykdymą. Įvykus klaidai (pvz. panaudojus neegzistuojančią mnemoniką), virtuali mašina darbo netęsia ir praneša apie įvykusią klaidą.
+            \paragraph{Užduoties pavyzdys} \mbox{}
             Pseudokodas:
             \begin{lstlisting}[language = c]
 for (i = 3; i > 1; i--) {
@@ -335,7 +350,7 @@ PUSHDS
 PUSH 00 00h
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 16]
-PUSH 00 03h
+PUSH 00 06h
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 19]
 OUT
@@ -352,7 +367,7 @@ PUSHDS
 PUSH 00 03h
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 33]
-PUSH 00 01h
+PUSH 00 02h
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 36]
 OUT
@@ -369,7 +384,7 @@ PUSHDS
 PUSH 00 04h
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 50]
-PUSH 00 02h
+PUSH 00 04h
             \end{lstlisting}
             \begin{lstlisting}[firstnumber = 53]
 OUT
