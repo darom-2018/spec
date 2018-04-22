@@ -156,7 +156,7 @@
         \includegraphics[scale=0.65]{Process_creation}
       \end{center}
       \subsection{Vartotojo programos patekimas į sistemą}
-        Kol vartotojo programa iš baitų išorinėje atmintyje tampa procesu operacinėje sistemoje, jai tenka pereiti kelis etapus. Visų pirma yra kviečiamas procesas Loader, kuris iš išorinės atminties perskaito užduoties programą, kurią konvertuoja į procesoriui suprantamą formatą ir siunčia pranešimą procesui Main, kuris sukuria po naują JobGoverner procesą kiekvienai vartojo užduočiai. Galiausiai JobGoverner sukuria VirtualMachine procesą, kuris jau gali vykdyti vartojo programą.
+        Kol vartotojo programa iš baitų išorinėje atmintyje tampa procesu operacinėje sistemoje, jai tenka pereiti kelis etapus. Visų pirma yra kviečiamas procesas Loader, kuris iš išorinės atminties perskaito užduoties programą, kurią konvertuoja į procesoriui suprantamą formatą ir siunčia pranešimą procesui Main, kuris sukuria po naują JobGovernor procesą kiekvienai vartojo užduočiai. Galiausiai JobGovernor sukuria VirtualMachine procesą, kuris jau gali vykdyti vartojo programą.
         \begin{center}
           \includegraphics[scale=1]{Program_load}
         \end{center}
@@ -176,14 +176,14 @@
       \subsubsection{Main}
         Procesas Main darbą pradeda užsiblokavęs ir laukdamas, kol gaus pranešimą iš "Užduotis vartotojo atmintyje". Šį pranešimą procesas Main gali gauti dviem atvejais:
         \begin{enumerate}
-          \item Iš proceso loader. Tai reiškia, kad sistemai buvo užduota įvykdyti naują vartotojo programą. Šiuo atveju reikia sukurti naują JobGoverner procesą ir blokuotis laukiant kito "Užduotis vartotojo atmintyje" pranešimo.
-          \item Iš proceso JobGoverner. Šis pranešimas turėtų būti fiktyvus ir reikšti, kad VirtualMachine procesas, už kurį buvo atsakingas resursą atlaisvinęs JobGoverner procesas, baigė savo darbą ir JobGoverner turi būti sunaikintas.
+          \item Iš proceso loader. Tai reiškia, kad sistemai buvo užduota įvykdyti naują vartotojo programą. Šiuo atveju reikia sukurti naują JobGovernor procesą ir blokuotis laukiant kito "Užduotis vartotojo atmintyje" pranešimo.
+          \item Iš proceso JobGovernor. Šis pranešimas turėtų būti fiktyvus ir reikšti, kad VirtualMachine procesas, už kurį buvo atsakingas resursą atlaisvinęs JobGovernor procesas, baigė savo darbą ir JobGovernor turi būti sunaikintas.
         \end{enumerate}
         \begin{center}
           \includegraphics[scale=0.65]{Main}
         \end{center}
       \subsubsection{Interrupt}
-        Procesas Interrupt pradeda darbą laukdamas "Pertraukimas" resurso. Šis resursas atlaisvinamas kai VirtualMachine, vykdydamas vartojo programa susiduria su situacija, kurios pats negali apdoroti. Tuomet Interrupt procesas nustato, kokia situacija kilo vykstant VirtualMachine procesui, suranda kuris JobGoverner procesas yra atsakingas už VirtualMachine, kuriame kilo pertraukimas ir būtent tam JobGoverner procesui perduoda "Iš pertraukimo" pranešimą. Taigi, šio proceso paskirtis, leisti VirtualMachine procesui bendrauti su JobGoverner procesu.
+        Procesas Interrupt pradeda darbą laukdamas "Pertraukimas" resurso. Šis resursas atlaisvinamas kai VirtualMachine, vykdydamas vartojo programa susiduria su situacija, kurios pats negali apdoroti. Tuomet Interrupt procesas nustato, kokia situacija kilo vykstant VirtualMachine procesui, suranda kuris JobGovernor procesas yra atsakingas už VirtualMachine, kuriame kilo pertraukimas ir būtent tam JobGovernor procesui perduoda "Iš pertraukimo" pranešimą. Taigi, šio proceso paskirtis, leisti VirtualMachine procesui bendrauti su JobGovernor procesu.
         \begin{center}
           \includegraphics[scale=1]{Interrupt}
         \end{center}
@@ -193,10 +193,10 @@
           \includegraphics[scale=1]{ChannelDevice}
         \end{center}
 
-      \subsubsection{JobGoverner}
-        JobGoverner procesas yra atsakingas už VirtualMachine proceso sukūrimą ir aptarnavimą. Sukūręs VirtualMachine procesą, JobGoverner užsiblokuoja ir laukia, kol sukurtajame VirtualMachine procese kils pertraukimas ir bus atlaisvintas "Iš pertraukimo" resursas (jį atlaisvina procesas Interrupt). Gavęs šį resursą JobGoverner sustabdo VirtualMachine proceso veikimą ir pradeda pertraukimo analizę. Visų pirma yra patikrinama, ar pertraukimas buvo įvedimo/išvedimo, jeigu taip, tai nustatoma, kokia konkrečiai įvedimo/išvedimo operacija buvo vykdoma ir per kanalų įrenginį atliekamas duomenų perdavimas. Jeigu vis dėlto pertraukimas nebuvo įvedimo/išvedimo, tuomet gali būti, kad virtualioje mašinoje TI registras pasiekė nulinę reikšmę. Tokiu atveju TI registras atnaujinamas ir VirtualMachine procesas vėl iš naujo konkuruoja su kitais procesais dėl procesoriaus. Tačiau, jeigu tai nebuvo nei įvedimo/išvedimo nei timeout pertraukimas, reiškia, kad virtualioje mašinoje įvyko kažkokia klaida ir jos darbas turi būti baigtas. O kadangi JobGoverner yra atsakingas už mašinos prižiūrėjimą, tai šis procesas daugiau nebeturi prasmės egzistuoti, todėl siunčia fiktyvų pranešimą procesui Main, kuris gali sunaikinti JobGoverner.
+      \subsubsection{JobGovernor}
+        JobGovernor procesas yra atsakingas už VirtualMachine proceso sukūrimą ir aptarnavimą. Sukūręs VirtualMachine procesą, JobGovernor užsiblokuoja ir laukia, kol sukurtajame VirtualMachine procese kils pertraukimas ir bus atlaisvintas "Iš pertraukimo" resursas (jį atlaisvina procesas Interrupt). Gavęs šį resursą JobGovernor sustabdo VirtualMachine proceso veikimą ir pradeda pertraukimo analizę. Visų pirma yra patikrinama, ar pertraukimas buvo įvedimo/išvedimo, jeigu taip, tai nustatoma, kokia konkrečiai įvedimo/išvedimo operacija buvo vykdoma ir per kanalų įrenginį atliekamas duomenų perdavimas. Jeigu vis dėlto pertraukimas nebuvo įvedimo/išvedimo, tuomet gali būti, kad virtualioje mašinoje TI registras pasiekė nulinę reikšmę. Tokiu atveju TI registras atnaujinamas ir VirtualMachine procesas vėl iš naujo konkuruoja su kitais procesais dėl procesoriaus. Tačiau, jeigu tai nebuvo nei įvedimo/išvedimo nei timeout pertraukimas, reiškia, kad virtualioje mašinoje įvyko kažkokia klaida ir jos darbas turi būti baigtas. O kadangi JobGovernor yra atsakingas už mašinos prižiūrėjimą, tai šis procesas daugiau nebeturi prasmės egzistuoti, todėl siunčia fiktyvų pranešimą procesui Main, kuris gali sunaikinti JobGovernor.
         \begin{center}
-          \includegraphics[width=\textwidth]{JobGoverner}
+          \includegraphics[width=\textwidth]{JobGovernor}
         \end{center}
 
       \subsubsection{VirtualMachine}
