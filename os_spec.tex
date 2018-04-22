@@ -156,7 +156,7 @@
         \includegraphics[scale=0.65]{Process_creation}
       \end{center}
       \subsection{Vartotojo programos patekimas į sistemą}
-        Kol vartotojo programa iš baitų išorinėje atmintyje tampa procesų operacinėje sistemoje, jai tenka pereiti kelis etapus. Visų pirma yra kviečiamas procesas Loader, kuris iš išorinės atminties perskaito užduoties programą, kurią konvertuoja į procesoriui suprantamą formatą ir siunčia pranešimą procesui Main, kuris sukuria po naują JobGoverner procesą kiekvienai vartojo užduočiai. Galiausiai JobGoverner sukuria VirtualMachine procesą, kuris jau gali vykdyti vartojo programą.
+        Kol vartotojo programa iš baitų išorinėje atmintyje tampa procesu operacinėje sistemoje, jai tenka pereiti kelis etapus. Visų pirma yra kviečiamas procesas Loader, kuris iš išorinės atminties perskaito užduoties programą, kurią konvertuoja į procesoriui suprantamą formatą ir siunčia pranešimą procesui Main, kuris sukuria po naują JobGoverner procesą kiekvienai vartojo užduočiai. Galiausiai JobGoverner sukuria VirtualMachine procesą, kuris jau gali vykdyti vartojo programą.
         \begin{center}
           \includegraphics[scale=1]{Program_load}
         \end{center}
@@ -169,7 +169,7 @@
           \end{center}
 
       \subsubsection{Loader}
-        Procesas Loader yra svarbiausias procesas vartojo užduoties patekimo į operacinę sistemą schemoje. Jis pradeda savo darbą laukdamas "Iš vartotojo sąsajos" resurso, kuris bus atlaisvintas tuomet, kai operacinės sistemos vartotojas nurodys, kurią programą jis nori įvykdyti. Tuomet bus atlaisvintas Loader procesui reikalingas resursas ir vartotojo programa bus nuskaityta iš išorinės atminties. Analizuodamas nuskaitytus duomenis, procesas Loader priima sprendimą, kiek vartotojo atminties resursų reikės ir blokuojasi laukdamas, kol resursai bus gauti. Gavęs vartotojo atminties resursą, Loader perkels vartojo programą į nurodytą atminties vietą ir pasiųs pranešimą procesui Main.
+        Procesas Loader yra svarbiausias procesas vartojo užduoties patekimo į operacinę sistemą schemoje. Jis pradeda savo darbą laukdamas "Iš vartotojo sąsajos" resurso, kuris bus atlaisvintas tuomet, kai operacinės sistemos vartotojas nurodys, kurią programą jis nori įvykdyti. Tuomet bus atlaisvintas Loader procesui reikalingas resursas ir vartotojo programa bus nuskaityta iš išorinės atminties. Analizuodamas nuskaitytus duomenis, procesas Loader priima sprendimą, kiek vartotojo atminties resursų reikės ir blokuojasi laukdamas, kol resursai bus gauti. Gavęs vartotojo atminties resursą, Loader perkels vartotojo programą į nurodytą atminties vietą ir pasiųs pranešimą procesui Main.
         \begin{center}
           \includegraphics[scale=1]{Loader}
         \end{center}
@@ -183,18 +183,18 @@
           \includegraphics[scale=0.65]{Main}
         \end{center}
       \subsubsection{Interrupt}
-        Procesas Interrupt pradeda darbą laukdamas "Pertraukimas" resurso. Šis resursas atlaisvinamas kai VirtualMachine, vykdydamas vartojo programa susiduria su situacija, kurios pats negali apdoroti. Tuomet Interrupt procesas nustato, kokia situacija kilo vykstant VirtualMachine procesui, suranda kuris JobGoverner procesas yra atsakingas už VirtualMachine, kuriame kilo pertraukimas ir būtent tam JobGoverner procesui perduoda "Iš pertraukimo" pranešimą. Taigi, šio proceso paskirtis, leistis VirtualMachine procesui bendrauti su JobGoverner procesu.
+        Procesas Interrupt pradeda darbą laukdamas "Pertraukimas" resurso. Šis resursas atlaisvinamas kai VirtualMachine, vykdydamas vartojo programa susiduria su situacija, kurios pats negali apdoroti. Tuomet Interrupt procesas nustato, kokia situacija kilo vykstant VirtualMachine procesui, suranda kuris JobGoverner procesas yra atsakingas už VirtualMachine, kuriame kilo pertraukimas ir būtent tam JobGoverner procesui perduoda "Iš pertraukimo" pranešimą. Taigi, šio proceso paskirtis, leisti VirtualMachine procesui bendrauti su JobGoverner procesu.
         \begin{center}
           \includegraphics[scale=1]{Interrupt}
         \end{center}
       \subsubsection{ChannelDevice}
-        ChannelDevice procesas leidžia kitiems procesams apsikeisti duomenimis tarp įrenginių ir realios mašinos atminties. Kadangi realios mašinos kanalų įrenginys vienu metu gali atlikti vieną duomenų pertraukimą, mes turime užtikrinti, kad proceso ChannelDevice vienu metu nenaudos keli procesai. Todėl ChannelDevice pradeda darbą atlaisvindamas "Channel Device" resursą ir laukdamas, kol gaus "Data Transfer" pranešimą. Šį pranešimą kanalų įrenginiui turėtų atsiųsti procesas, kuris prieš tai blokavosi laukdamas "Channel Device" resurso ir jį gavęs pasiuntė "Data Transfer pranešimą". Su "Data Transfer" pranešimu ChannelDevice procesas gauna visą reikalingą informaciją, kad galėtų atlikti duomenų persiuntimą per kanalų įrenginį. Tada nurodo kanalų įrenginiui ką daryti ir pabaigęs savo darbą atlaisviną "From Channel Device" pranešimą, kurio turėtų laukti duomenų perdavimą iniciavęs procesas.
+        ChannelDevice procesas leidžia kitiems procesams apsikeisti duomenimis tarp įrenginių ir realios mašinos atminties. Kadangi realios mašinos kanalų įrenginys vienu metu gali atlikti vieną duomenų perdavimą, mes turime užtikrinti, kad proceso ChannelDevice vienu metu nenaudos keli procesai. Todėl ChannelDevice pradeda darbą atlaisvindamas "Channel Device" resursą ir laukdamas, kol gaus "Data Transfer" pranešimą. Šį pranešimą kanalų įrenginiui turėtų atsiųsti procesas, kuris prieš tai blokavosi laukdamas "Channel Device" resurso ir jį gavęs pasiuntė "Data Transfer" pranešimą. Su "Data Transfer" pranešimu ChannelDevice procesas gauna visą reikalingą informaciją, kad galėtų atlikti duomenų persiuntimą per kanalų įrenginį. Tada nurodo kanalų įrenginiui ką daryti ir pabaigęs savo darbą atlaisviną "From Channel Device" pranešimą, kurio turėtų laukti duomenų perdavimą iniciavęs procesas.
         \begin{center}
           \includegraphics[scale=1]{ChannelDevice}
         \end{center}
 
       \subsubsection{JobGoverner}
-        JobGoverner procesas yra atsakingas už VirtualMachine proceso sukūrimą ir aptarnavimą. Sukūręs VirtaulMachine procesą, JobGoverner užsiblokuoja ir lauki, kol sukurtajama VirtualMachine procese kils pertraukimas ir bus atlaisvintas "Iš pertraukimo" resursas (jį atlasvina procesas Interrupt). Gavęs šį resursą JobGoverner sustabdo VirtualMachine proceso veikimą ir pradeda pertraukimo analizę. Visų pirma yra patikrinama, ar pertraukimas buvo įvedimo išvedimo, jeigu taip, tai nustatoma, kokia konkrečiai įvedimo/išvedimo operacija buvo vykdoma ir per kanalų įrenginį atliekamas duomenų perdavimas. Jeigu vis dėlto pertraukimas nebuvo įvedimo/išvedimo, tuomet gali būti, kad virtualioje mašinoje TI registras pasiekė nulinę reikšmę. Tokiu atveju TI registras atnaujinamas ir VirtualMachine procesas vėl iš naujo konkuruoja su kitais procesais dėl procesoriaus. Tačiau, jeigu tai nebuvo nei įvedimo/išvedimo nei timeout pertraukimas, reiškia, kad virtualioje mašinoje įvyko kažkokia klaida ir jos darbas turi būti baigtas. O kadangi JobGoverner yra atsakingas už mašinos prižiūrėjimą, tai šis procesas daugiau nebeturi prasmės egzistuoti, todėl siunčia fiktyvų pranešimą procesui Main, kuris gali sunaikinti JobGoverner.
+        JobGoverner procesas yra atsakingas už VirtualMachine proceso sukūrimą ir aptarnavimą. Sukūręs VirtualMachine procesą, JobGoverner užsiblokuoja ir laukia, kol sukurtajame VirtualMachine procese kils pertraukimas ir bus atlaisvintas "Iš pertraukimo" resursas (jį atlaisvina procesas Interrupt). Gavęs šį resursą JobGoverner sustabdo VirtualMachine proceso veikimą ir pradeda pertraukimo analizę. Visų pirma yra patikrinama, ar pertraukimas buvo įvedimo/išvedimo, jeigu taip, tai nustatoma, kokia konkrečiai įvedimo/išvedimo operacija buvo vykdoma ir per kanalų įrenginį atliekamas duomenų perdavimas. Jeigu vis dėlto pertraukimas nebuvo įvedimo/išvedimo, tuomet gali būti, kad virtualioje mašinoje TI registras pasiekė nulinę reikšmę. Tokiu atveju TI registras atnaujinamas ir VirtualMachine procesas vėl iš naujo konkuruoja su kitais procesais dėl procesoriaus. Tačiau, jeigu tai nebuvo nei įvedimo/išvedimo nei timeout pertraukimas, reiškia, kad virtualioje mašinoje įvyko kažkokia klaida ir jos darbas turi būti baigtas. O kadangi JobGoverner yra atsakingas už mašinos prižiūrėjimą, tai šis procesas daugiau nebeturi prasmės egzistuoti, todėl siunčia fiktyvų pranešimą procesui Main, kuris gali sunaikinti JobGoverner.
         \begin{center}
           \includegraphics[width=\textwidth]{JobGoverner}
         \end{center}
@@ -205,11 +205,6 @@
           \includegraphics[scale=1]{VirtualMachine}
         \end{center}
 
-
-    \section{Procesų paskirtis}
-    Kokia procesų paskirtis
-    \section{Procesų veikimas}
-    Kaip veikia procesai
     \section{Resursai}
       Sistemoje turime dviejų tipų resursus:
       \begin{enumerate}
@@ -222,16 +217,16 @@
           \par
           Perduodami parametrai:
           \begin{itemize}
-            \item Nuoroda į resursą sukurusį procesą
+            \item Nuoroda į resursą sukūrusį procesą
             \item Resurso išorinis vardas
           \end{itemize}
           Primityvo veiksmai:
           \begin{itemize}
             \item Pridedamas prie bendro resursų sąrašo
             \item Pridedamas prie tėvo sukurtų resursų sąrašo
-            \item Prisikiramas unikalus vidinis vardas
+            \item Prisikiriamas unikalus vidinis vardas
             \item Sukuriamas resurso elementų sąrašas
-            \item Sukuriamas Laukiančių procesų sąrašas
+            \item Sukuriamas laukiančių procesų sąrašas
           \end{itemize}
 
         \item \textbf{NAIKINTIR}
@@ -276,7 +271,7 @@
           \end{itemize}
       \end{itemize}
       \subsection{Resursų paskirstytojas}
-        Resursų paskirstytojo užduotis - tikrinti konkretau resurso laukiančių procesų sąrašą ir esant galimybei perduoti resursą laukiančiam procesui ir pažymėti jį kaip pasiruošusį (arba pasiruošusį sustabdytą, jeigu pereinama iš būsenos blokuotas sustabdytas).
+        Resursų paskirstytojo užduotis - tikrinti konkretaus resurso laukiančių procesų sąrašą ir esant galimybei perduoti resursą laukiančiam procesui ir pažymėti jį kaip pasiruošusį (arba pasiruošusį sustabdytą, jeigu pereinama iš būsenos blokuotas sustabdytas).
         \subsubsection{Planuotojas}
         Procesorius iš esmės yra vienas iš sistemos resursų, tačiau, šio resurso svarba sistemoje yra milžiniška, todėl procesorius turi savo atskirą resursų paskirstytoją - planuotoją.
         \par
