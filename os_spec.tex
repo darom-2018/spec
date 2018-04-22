@@ -138,7 +138,9 @@
               \item \textbf{Sustabdytas} - procesą sustabdė kažkuris kitas procesas
           \end{itemize}
       \subsubsection{Procesų būsenų kaita}
-        \includegraphics[width=\textwidth]{Process_state}
+        \begin{center}
+          \includegraphics[scale=0.7]{Process_state}
+        \end{center}
         \begin{enumerate}
           \item Vykdomas procesas negavo prašomo resurso
           \item Iš vykdomo proceso sistema atima procesorių dėl kokios nors kitos priežasties
@@ -153,25 +155,25 @@
       \subsection{Procesų kūrimas}
       Procesai yra skirstomi į sisteminius ir vartotojo. Sisteminiai procesai yra sukuriami sistemos darbo pradžioje. Juos sukuria procesas \textbf{StartStop}. Vartotojo procesai yra sukuriami sisteminių procesų. Bendra procesų kūrimo schema:
       \begin{center}
-        \includegraphics[scale=0.65]{Process_creation}
+        \includegraphics[scale=0.5]{Process_creation}
       \end{center}
       \subsection{Vartotojo programos patekimas į sistemą}
         Kol vartotojo programa iš baitų išorinėje atmintyje tampa procesu operacinėje sistemoje, jai tenka pereiti kelis etapus. Visų pirma yra kviečiamas procesas Loader, kuris iš išorinės atminties perskaito užduoties programą, kurią konvertuoja į procesoriui suprantamą formatą ir siunčia pranešimą procesui Main, kuris sukuria po naują JobGovernor procesą kiekvienai vartojo užduočiai. Galiausiai JobGovernor sukuria VirtualMachine procesą, kuris jau gali vykdyti vartojo programą.
         \begin{center}
-          \includegraphics[scale=1]{Program_load}
+          \includegraphics[scale=0.5]{Program_load}
         \end{center}
 
       \subsection{Procesų veikimas}
         \subsubsection{StartStop}
           StartStop yra pirmas procesas, kuris atsiranda sistemoje, vos tik ją paleidus. Jo paskirtis yra sukurti visus kitus sisteminius procesus bei resursus kurie leistų vykdyti operacinės sistemos darbą. Atlikęs savo užduotį StartStop procesas užsiblokuoja laukdamas "OS pabaiga" resurso, kuris bus atlaisvintas tik tada, kai operacinė sistema norės pabaigti savo darbą, taigi, beveik visą OS veikimo trukmę, procesas StartStop bus užsiblokavęs. Kai galiausiai jis atsiblokuos sulaukęs "OS pabaiga" resurso, jis sunaikins savo sukurtus sisteminius procesus bei resursus ir operacinės sistemos darbas bus baigtas.
           \begin{center}
-            \includegraphics[scale=1]{StartStop}
+            \includegraphics[scale=0.5]{StartStop}
           \end{center}
 
       \subsubsection{Loader}
         Procesas Loader yra svarbiausias procesas vartojo užduoties patekimo į operacinę sistemą schemoje. Jis pradeda savo darbą laukdamas "Iš vartotojo sąsajos" resurso, kuris bus atlaisvintas tuomet, kai operacinės sistemos vartotojas nurodys, kurią programą jis nori įvykdyti. Tuomet bus atlaisvintas Loader procesui reikalingas resursas ir vartotojo programa bus nuskaityta iš išorinės atminties. Analizuodamas nuskaitytus duomenis, procesas Loader priima sprendimą, kiek vartotojo atminties resursų reikės ir blokuojasi laukdamas, kol resursai bus gauti. Gavęs vartotojo atminties resursą, Loader perkels vartotojo programą į nurodytą atminties vietą ir pasiųs pranešimą procesui Main.
         \begin{center}
-          \includegraphics[scale=1]{Loader}
+          \includegraphics[scale=0.5]{Loader}
         \end{center}
       \subsubsection{Main}
         Procesas Main darbą pradeda užsiblokavęs ir laukdamas, kol gaus pranešimą iš "Užduotis vartotojo atmintyje". Šį pranešimą procesas Main gali gauti dviem atvejais:
@@ -180,17 +182,17 @@
           \item Iš proceso JobGovernor. Šis pranešimas turėtų būti fiktyvus ir reikšti, kad VirtualMachine procesas, už kurį buvo atsakingas resursą atlaisvinęs JobGovernor procesas, baigė savo darbą ir JobGovernor turi būti sunaikintas.
         \end{enumerate}
         \begin{center}
-          \includegraphics[scale=0.65]{Main}
+          \includegraphics[scale=0.5]{Main}
         \end{center}
       \subsubsection{Interrupt}
         Procesas Interrupt pradeda darbą laukdamas "Pertraukimas" resurso. Šis resursas atlaisvinamas kai VirtualMachine, vykdydamas vartojo programa susiduria su situacija, kurios pats negali apdoroti. Tuomet Interrupt procesas nustato, kokia situacija kilo vykstant VirtualMachine procesui, suranda kuris JobGovernor procesas yra atsakingas už VirtualMachine, kuriame kilo pertraukimas ir būtent tam JobGovernor procesui perduoda "Iš pertraukimo" pranešimą. Taigi, šio proceso paskirtis, leisti VirtualMachine procesui bendrauti su JobGovernor procesu.
         \begin{center}
-          \includegraphics[scale=1]{Interrupt}
+          \includegraphics[scale=0.5]{Interrupt}
         \end{center}
       \subsubsection{ChannelDevice}
         ChannelDevice procesas leidžia kitiems procesams apsikeisti duomenimis tarp įrenginių ir realios mašinos atminties. Kadangi realios mašinos kanalų įrenginys vienu metu gali atlikti vieną duomenų perdavimą, mes turime užtikrinti, kad proceso ChannelDevice vienu metu nenaudos keli procesai. Todėl ChannelDevice pradeda darbą atlaisvindamas "Channel Device" resursą ir laukdamas, kol gaus "Data Transfer" pranešimą. Šį pranešimą kanalų įrenginiui turėtų atsiųsti procesas, kuris prieš tai blokavosi laukdamas "Channel Device" resurso ir jį gavęs pasiuntė "Data Transfer" pranešimą. Su "Data Transfer" pranešimu ChannelDevice procesas gauna visą reikalingą informaciją, kad galėtų atlikti duomenų persiuntimą per kanalų įrenginį. Tada nurodo kanalų įrenginiui ką daryti ir pabaigęs savo darbą atlaisviną "From Channel Device" pranešimą, kurio turėtų laukti duomenų perdavimą iniciavęs procesas.
         \begin{center}
-          \includegraphics[scale=1]{ChannelDevice}
+          \includegraphics[scale=0.5]{ChannelDevice}
         \end{center}
 
       \subsubsection{JobGovernor}
@@ -202,7 +204,7 @@
       \subsubsection{VirtualMachine}
         Šis procesas yra skirtas vartotojo programos vykdymui.
         \begin{center}
-          \includegraphics[scale=1]{VirtualMachine}
+          \includegraphics[scale=0.5]{VirtualMachine}
         \end{center}
 
     \section{Resursai}
