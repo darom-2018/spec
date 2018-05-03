@@ -157,7 +157,7 @@
       \begin{center}
         \includegraphics[scale=0.5]{Process_creation}
       \end{center}
-      \subsection{Vartotojo programos patekimas į sistemą}
+       \subsection{Vartotojo programos patekimas į sistemą}
         Kol vartotojo programa iš baitų išorinėje atmintyje tampa procesu operacinėje sistemoje, jai tenka pereiti kelis etapus. Visų pirma yra kviečiamas procesas Loader, kuris iš išorinės atminties perskaito užduoties programą, kurią konvertuoja į procesoriui suprantamą formatą ir siunčia pranešimą procesui Main, kuris sukuria po naują JobGovernor procesą kiekvienai vartojo užduočiai. Galiausiai JobGovernor sukuria VirtualMachine procesą, kuris jau gali vykdyti vartojo programą.
         \begin{center}
           \includegraphics[scale=0.5]{Program_load}
@@ -269,9 +269,28 @@
           Primityvo veiksmai:
           \begin{itemize}
             \item Resurso elementas pridedamas prie resurso elementų sąrašo
-            \item Kviečiamas resursų paskirstytojas
+            \item Kviečiamas resursų paskirstytoja
           \end{itemize}
       \end{itemize}
+      \subsection{Resursų lentelė}
+      \begin{center}
+        \begin{tabular}{ | l | l | l | l |}
+          \hline
+            Resurso pavadinimas & Sukuria & Laukia & Atlaisvina\\
+            \hline
+            OS pabaiga          & Sistemine Komanda shutdown & StartStop &-\\
+            IsVartotojoSasajos  & Sistemine Komanda load  & Loader &-\\
+            VartojoAtmintis     & StartStop     & Loader & JobGovernor\\
+            UzduotisVartotojoAtmintyje & Loader & Main &-\\
+            Pertraukimas        & VirtualMachine& Interrupt &-\\
+            IsPertraukimo       & Interrupt     & JobGovernor&-\\
+            ChannelDevice       & StartStop & JobGovernor & ChannelDevice \\
+            DataTransfer        & JobGovernor   & ChannelDevice &-\\
+            FromChannelDevice   & ChannelDevice & JobGovernor&-\\
+
+          \hline
+        \end{tabular}
+        \end{center}
       \subsection{Resursų paskirstytojas}
         Resursų paskirstytojo užduotis - tikrinti konkretaus resurso laukiančių procesų sąrašą ir esant galimybei perduoti resursą laukiančiam procesui ir pažymėti jį kaip pasiruošusį (arba pasiruošusį sustabdytą, jeigu pereinama iš būsenos blokuotas sustabdytas).
         \subsubsection{Planuotojas}
